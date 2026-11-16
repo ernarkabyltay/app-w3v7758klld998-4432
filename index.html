@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  body { font-family: sans-serif; margin: 16px;
+         background: var(--tg-theme-bg-color);
+         color: var(--tg-theme-text-color); }
+  li { margin: 10px 0; font-size: 18px; }
+</style>
+</head>
+<body>
+  <h2>Старшие врачи СМП</h2>
+  <ol>
+    <li>Иванов И.И. — подстанция №1</li>
+    <li>Петров П.П. — подстанция №2</li>
+  </ol>
+<script>
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+</script>
+</body>
+</html>

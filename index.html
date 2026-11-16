@@ -2,24 +2,166 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>СМП Алматы</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  body { font-family: sans-serif; margin: 16px;
-         background: var(--tg-theme-bg-color);
-         color: var(--tg-theme-text-color); }
-  li { margin: 10px 0; font-size: 18px; }
+:root{--bg:#f2f5f7;--card:#fff;--ink:#12263a;--mute:#5b7083;--line:#dfe7ed;--head:#12263a;
+--doc:#1b8a6b;--narc:#c8312f;--med:#2c7bb6;--r:14px}
+[data-theme=dark]{--bg:#0d1620;--card:#16232f;--ink:#e8eff5;--mute:#8da2b4;--line:#243747;--head:#0a121a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;text-align:left}
+header{background:var(--head);color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{position:relative;width:44px;height:44px;border-radius:12px;background:var(--narc);display:grid;place-items:center;font-size:24px;overflow:hidden;flex:none}
+.logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
+.brand h1{margin:0;font-size:20px;line-height:1.1}
+.brand p{margin:2px 0 0;font-size:13px;opacity:.7}
+#search{width:100%;margin-top:12px;padding:11px 14px;border-radius:12px;border:0;font:inherit;background:rgba(255,255,255,.12);color:#fff}
+#search::placeholder{color:rgba(255,255,255,.6)}
+main{padding:16px;max-width:640px;margin:0 auto}
+h2{margin:4px 0 14px;font-size:22px}
+.tiles{display:grid;gap:12px}
+.tile{display:flex;flex-direction:column;gap:4px;padding:16px 16px 16px 20px;border-radius:var(--r);background:var(--card);border-left:6px solid var(--c);box-shadow:0 1px 0 var(--line)}
+.tile i{font-style:normal;font-size:30px;line-height:1;margin-bottom:6px}
+.tile b{font-size:18px}.tile small{color:var(--mute)}
+.row{display:flex;align-items:center;gap:14px;width:100%;margin-bottom:10px;padding:12px 14px;background:var(--card);border-radius:var(--r);border-left:6px solid var(--c)}
+.ic{width:46px;height:46px;border-radius:12px;background:var(--bg);display:grid;place-items:center;font-size:24px;overflow:hidden;flex:none}
+.ic img,.tile i img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.tile i img{width:34px;height:34px}
+.row b{display:block}.row small{color:var(--mute)}
+.note{margin:6px 0 14px;padding:10px 12px;border-radius:10px;background:var(--card);color:var(--mute);font-size:13px;border:1px dashed var(--line)}
+.empty{padding:28px 8px;text-align:center;color:var(--mute)}
+nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:6}
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px 8px;font-size:11px;color:var(--mute);border-top:3px solid transparent}
+nav button span{font-size:21px;line-height:1.1}
+nav button.on{color:var(--ink);font-weight:600;border-top-color:var(--c,var(--narc))}
+#sheet[hidden]{display:none}
+.bd{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:8}
+.pn{position:fixed;left:0;right:0;bottom:0;max-height:82vh;overflow:auto;background:var(--card);border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));z-index:9;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.pn{animation:none}}
+.hd{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.hd .ic{width:60px;height:60px;font-size:32px}
+.hd b{font-size:20px;display:block;line-height:1.2}.hd small{color:var(--mute)}
+.tx{white-space:pre-line;margin-bottom:18px}
+.close{width:100%;padding:13px;border-radius:12px;background:var(--head);color:#fff;text-align:center;font-weight:600}
+:focus-visible{outline:3px solid var(--med);outline-offset:2px}
 </style>
 </head>
 <body>
-  <h2>Старшие врачи СМП</h2>
-  <ol>
-    <li>Иванов И.И. — подстанция №1</li>
-    <li>Петров П.П. — подстанция №2</li>
-  </ol>
+<header>
+  <div class="brand">
+    <div class="logo">✚<img id="logo" alt="" onerror="this.remove()"></div>
+    <div><h1 id="ttl"></h1><p id="sub"></p></div>
+  </div>
+  <input id="search" type="search" placeholder="Поиск" hidden>
+</header>
+<main id="view"></main>
+<nav id="nav"></nav>
+<div id="sheet" hidden>
+  <div class="bd" data-close></div>
+  <div class="pn"><div class="hd" id="shd"></div><div class="tx" id="stx"></div><button class="close" data-close>Закрыть</button></div>
+</div>
+
 <script>
-  Telegram.WebApp.ready();
-  Telegram.WebApp.expand();
+/* ============ НАСТРОЙКИ: здесь меняете тексты, значки и картинки ============
+   icon: эмодзи (например "💊") ИЛИ имя файла картинки (например "ivanov.png"),
+   файл нужно загрузить в тот же репозиторий рядом с index.html.            */
+const CONFIG = {
+  title: "СМП Алматы",
+  subtitle: "Справочник фельдшера",
+  logo: "logo.png"            // загрузите свой логотип с этим именем
+};
+
+const SECTIONS = {
+  doctors: {
+    name: "Старшие врачи", short: "Врачи", icon: "🩺", color: "var(--doc)",
+    note: "",
+    items: [
+      { icon: "👨‍⚕️", title: "Иванов И.И.", sub: "Подстанция №1", text: "Здесь можно добавить любую информацию." },
+      { icon: "👩‍⚕️", title: "Петрова А.С.", sub: "Подстанция №2", text: "" },
+      { icon: "👨‍⚕️", title: "Сериков Е.К.", sub: "Подстанция №3", text: "" }
+    ]
+  },
+  narcotics: {
+    name: "Наркотические препараты", short: "Наркотические", icon: "⚠️", color: "var(--narc)",
+    note: "Справочная информация. Сверяйтесь с действующими приказами и протоколами МЗ РК.",
+    items: [
+      { icon: "💉", title: "Название препарата 1", sub: "Форма выпуска", text: "Правила хранения, учёта и списания — вставьте текст из действующего приказа." },
+      { icon: "💉", title: "Название препарата 2", sub: "Форма выпуска", text: "" }
+    ]
+  },
+  meds: {
+    name: "Лекарственные препараты", short: "Лекарства", icon: "💊", color: "var(--med)",
+    note: "Справочная информация. Дозы и показания сверяйте с действующими протоколами.",
+    items: [
+      { icon: "💊", title: "Название препарата 1", sub: "Группа", text: "Показания, противопоказания, форма выпуска." },
+      { icon: "💊", title: "Название препарата 2", sub: "Группа", text: "" },
+      { icon: "🧪", title: "Название препарата 3", sub: "Группа", text: "" }
+    ]
+  }
+};
+/* ============================ КОНЕЦ НАСТРОЕК ============================ */
+
+const tg = window.Telegram && Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); document.documentElement.dataset.theme = tg.colorScheme; }
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ico = s => /\.(png|jpe?g|svg|webp|gif)$/i.test(s || "") ? `<img src="${esc(s)}" alt="">` : esc(s);
+
+let cur = "home", q = "";
+
+$("#ttl").textContent = CONFIG.title;
+$("#sub").textContent = CONFIG.subtitle;
+$("#logo").src = CONFIG.logo;
+document.title = CONFIG.title;
+
+$("#nav").innerHTML =
+  `<button data-k="home" style="--c:var(--head)"><span>🏠</span>Главная</button>` +
+  Object.entries(SECTIONS).map(([k, s]) =>
+    `<button data-k="${k}" style="--c:${s.color}"><span>${ico(s.icon)}</span>${esc(s.short)}</button>`).join("");
+
+function render() {
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.k === cur));
+  $("#search").hidden = cur === "home";
+  const v = $("#view");
+  if (cur === "home") {
+    v.innerHTML = `<h2>Что нужно найти?</h2><div class="tiles">` +
+      Object.entries(SECTIONS).map(([k, s]) =>
+        `<button class="tile" data-k="${k}" style="--c:${s.color}"><i>${ico(s.icon)}</i><b>${esc(s.name)}</b><small>Записей: ${s.items.length}</small></button>`).join("") +
+      `</div>`;
+    return;
+  }
+  const s = SECTIONS[cur], t = q.trim().toLowerCase();
+  const rows = s.items.map((it, i) => ({ it, i })).filter(({ it }) =>
+    !t || [it.title, it.sub, it.text].join(" ").toLowerCase().includes(t));
+  v.innerHTML = `<h2>${esc(s.name)}</h2>` + (s.note ? `<div class="note">${esc(s.note)}</div>` : "") +
+    (rows.length ? rows.map(({ it, i }) =>
+      `<button class="row" data-i="${i}" style="--c:${s.color}"><span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span></button>`).join("")
+      : `<div class="empty">Ничего не найдено. Попробуйте другое слово.</div>`);
+}
+
+function openItem(i) {
+  const it = SECTIONS[cur].items[i];
+  $("#shd").innerHTML = `<span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span>`;
+  $("#stx").textContent = it.text || "Описание пока не добавлено.";
+  $("#sheet").hidden = false;
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-k],[data-i],[data-close]");
+  if (!t) return;
+  if (t.dataset.close !== undefined) { $("#sheet").hidden = true; return; }
+  if (t.dataset.k) { cur = t.dataset.k; q = ""; $("#search").value = ""; render(); window.scrollTo(0, 0); return; }
+  if (t.dataset.i) openItem(+t.dataset.i);
+});
+$("#search").addEventListener("input", e => { q = e.target.value; render(); });
+
+render();
 </script>
 </body>
 </html>

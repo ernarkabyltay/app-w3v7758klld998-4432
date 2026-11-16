@@ -7,7 +7,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{--bg:#f2f5f7;--card:#fff;--ink:#12263a;--mute:#5b7083;--line:#dfe7ed;--head:#12263a;
---doc:#1b8a6b;--narc:#c8312f;--med:#2c7bb6;--r:14px}
+--doc:#1b8a6b;--narc:#c8312f;--med:#2c7bb6;--warn:#d97706;--ref:#6d28d9;--r:14px}
 [data-theme=dark]{--bg:#0d1620;--card:#16232f;--ink:#e8eff5;--mute:#8da2b4;--line:#243747;--head:#0a121a}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -26,6 +26,8 @@ header{background:var(--head);color:#fff;padding:14px 16px 12px;position:sticky;
 #search::placeholder{color:rgba(255,255,255,.6)}
 main{padding:16px;max-width:640px;margin:0 auto}
 h2{margin:4px 0 14px;font-size:22px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;margin-bottom:12px;padding:8px 12px;border-radius:10px;background:var(--card);color:var(--ink);font-size:14px;font-weight:600;box-shadow:0 1px 0 var(--line)}
+.back-btn:active{opacity:.75}
 .tiles{display:grid;gap:12px}
 .tile{display:flex;flex-direction:column;gap:4px;padding:16px 16px 16px 20px;border-radius:var(--r);background:var(--card);border-left:6px solid var(--c);box-shadow:0 1px 0 var(--line)}
 .tile i{font-style:normal;font-size:30px;line-height:1;margin-bottom:6px}
@@ -38,7 +40,7 @@ h2{margin:4px 0 14px;font-size:22px}
 .note{margin:6px 0 14px;padding:10px 12px;border-radius:10px;background:var(--card);color:var(--mute);font-size:13px;border:1px dashed var(--line)}
 .empty{padding:28px 8px;text-align:center;color:var(--mute)}
 nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:6}
-nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px 8px;font-size:11px;color:var(--mute);border-top:3px solid transparent}
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px 8px;font-size:11px;color:var(--mute);border-top:3px solid transparent;text-align:center}
 nav button span{font-size:21px;line-height:1.1}
 nav button.on{color:var(--ink);font-weight:600;border-top-color:var(--c,var(--narc))}
 #sheet[hidden]{display:none}
@@ -81,181 +83,87 @@ const LOGO_FILE = "logo.png"; // загрузите свой логотип с �
 
 const DATA = {
   kk: {
-    btnLabel: "ҚАЗ", // на кнопке показывается язык, на который можно переключиться
+    btnLabel: "РУС",
     title: "Алматы қаласының жедел медициналық жәрдем қызметі",
     subtitle: "№10 қ/с фельдшер көмекшісі",
     ui: {
-      homeNav: "Басты бет",
-      homeTitle: "Қандай көмек қажет?",
+      homeTitle: "Бөлімді таңдаңыз",
+      backHome: "← Басты бетке оралу",
       count: "Жазбалар саны:",
-      searchPlaceholder: "Іздеу",
+      searchPlaceholder: "Бөлім ішінен іздеу...",
       empty: "Ештеңе табылмады. Басқа сөз жазып көріңіз.",
       noText: "Сипаттама әлі қосылмаған.",
       close: "Жабу"
     },
+    // 4 вкладки в нижнем меню
+    nav: [
+      { key: "home", label: "Басты бет", icon: "🏠", color: "var(--head)" },
+      { key: "cards", label: "Шақыру карталары", icon: "📋", color: "var(--doc)" },
+      { key: "meds", label: "Дәрілік препараттар", icon: "💊", color: "var(--med)" },
+      { key: "ref", label: "Анықтамалық", icon: "📖", color: "var(--ref)" }
+    ],
+    // Разделы на главной странице (открываются как каталоги)
+    homeSections: ["safety", "narcotics", "briefing"],
+    // Содержимое всех каталогов (и с главной страницы, и с нижнего меню)
     sections: {
-      doctors: {
-        name: "Аға дәрігерлер", short: "Дәрігерлер", icon: "🩺", color: "var(--doc)",
-        note: "",
+      safety: {
+        name: "Қауіпсіздік кодтары",
+        icon: "🛡️",
+        color: "var(--warn)",
+        note: "Төтенше жағдайлар мен қауіпсіздік алгоритмдері.",
         items: [
-          { icon: "👨‍⚕️", title: "Иванов И.И.", sub: "№1 қосалқы станция", text: "Мұнда кез келген ақпаратты қосуға болады." },
-          { icon: "👩‍⚕️", title: "Петрова А.С.", sub: "№2 қосалқы станция", text: "" },
-          { icon: "👨‍⚕️", title: "Сериков Е.К.", sub: "№3 қосалқы станция", text: "" }
+          { icon: "🔴", title: "Қызыл код", sub: "Өрт қауіпсіздігі", text: "Өрт шыққан жағдайдағы бригаданың іс-әрекет алгоритмі..." },
+          { icon: "🔵", title: "Көк код", sub: "Жүрек-өкпе реанимациясы", text: "Клиникалық өлім кезіндегі шұғыл әрекеттер..." },
+          { icon: "🟡", title: "Сары код", sub: "Агрессиялық пациент", text: "Қауіпті жағдайда өзін-өзі қорғау және полиция шақыру тәртібі..." }
         ]
       },
       narcotics: {
-        name: "Есірткілік препараттар", short: "Есірткілік", icon: "⚠️", color: "var(--narc)",
+        name: "Есірткілік және психотроптық препараттар",
+        icon: "⚠️",
+        color: "var(--narc)",
         note: "Анықтамалық ақпарат. ҚР ДСМ қолданыстағы бұйрықтары мен хаттамаларымен салыстырыңыз.",
         items: [
-          { icon: "💉", title: "Препарат атауы 1", sub: "Шығарылу түрі", text: "Сақтау, есепке алу және есептен шығару ережелері — қолданыстағы бұйрықтан мәтін қойыңыз." },
-          { icon: "💉", title: "Препарат атауы 2", sub: "Шығарылу түрі", text: "" }
+          { icon: "💉", title: "Морфин 1% - 1,0 мл", sub: "Есірткілік анальгетик", text: "Сақтау, есепке алу, қолдану және бос ампулаларды тапсыру ережелері." },
+          { icon: "💉", title: "Фентанил 0,005% - 2,0 мл", sub: "Есірткілік анальгетик", text: "Көрсеткіштері, дозалануы және есептен шығару тәртібі." },
+          { icon: "💉", title: "Диазепам (Сибазон) 0,5% - 2,0 мл", sub: "Психотроптық препарат", text: "Құрысу синдромы кезінде қолдану және есепке алу тәртібі." }
+        ]
+      },
+      briefing: {
+        name: "Планёрка",
+        icon: "📢",
+        color: "var(--doc)",
+        note: "Ауысым алдындағы ақпарат, бұйрықтар және өзекті хабарламалар.",
+        items: [
+          { icon: "📌", title: "Ауысымдағы өзгерістер", sub: "Жаңартылған ақпарат", text: "Мұнда планёркада айтылған негізгі талаптар мен жаңалықтар жазылады." },
+          { icon: "🚑", title: "Госпитализация кестесі", sub: "Кезекші стационарлар", text: "Бейінді ауруханалардың кезекшілік күндері мен қабылдау тәртібі." }
+        ]
+      },
+      cards: {
+        name: "Шақыру карталары",
+        icon: "📋",
+        color: "var(--doc)",
+        note: "Шақыру картасын (№110/у нысаны) дұрыс толтыру үлгілері.",
+        items: [
+          { icon: "📄", title: "Жіті коронарлық синдром (ЖКС)", sub: "Толтыру үлгісі", text: "Шағымдары, анамнез, объективті статус, ЭКГ сипаттамасы және көрсетілген көмек." },
+          { icon: "📄", title: "Артериялық гипертензия", sub: "Толтыру үлгісі", text: "АҚ өлшеу көрсеткіштері, неврологиялық статус және терапия." },
+          { icon: "📄", title: "ЖРВИ / Гипертермия", sub: "Толтыру үлгісі", text: "Статус сипаттамасы және актив беру тәртібі." }
         ]
       },
       meds: {
-        name: "Дәрілік препараттар", short: "Дәрілер", icon: "💊", color: "var(--med)",
+        name: "Дәрілік препараттар",
+        icon: "💊",
+        color: "var(--med)",
         note: "Анықтамалық ақпарат. Дозалар мен көрсеткіштерді қолданыстағы хаттамалармен салыстырыңыз.",
         items: [
-          { icon: "💊", title: "Препарат атауы 1", sub: "Тобы", text: "Көрсеткіштері, қарсы көрсеткіштері, шығарылу түрі." },
-          { icon: "💊", title: "Препарат атауы 2", sub: "Тобы", text: "" },
-          { icon: "🧪", title: "Препарат атауы 3", sub: "Тобы", text: "" }
-        ]
-      }
-    }
-  },
-
-  ru: {
-    btnLabel: "РУС",
-    title: "Служба скорой медицинской помощи г. Алматы",
-    subtitle: "Помощник фельдшера п/с №10",
-    ui: {
-      homeNav: "Главная",
-      homeTitle: "Что нужно найти?",
-      count: "Записей:",
-      searchPlaceholder: "Поиск",
-      empty: "Ничего не найдено. Попробуйте другое слово.",
-      noText: "Описание пока не добавлено.",
-      close: "Закрыть"
-    },
-    sections: {
-      doctors: {
-        name: "Старшие врачи", short: "Врачи", icon: "🩺", color: "var(--doc)",
-        note: "",
-        items: [
-          { icon: "👨‍⚕️", title: "Иванов И.И.", sub: "Подстанция №1", text: "Здесь можно добавить любую информацию." },
-          { icon: "👩‍⚕️", title: "Петрова А.С.", sub: "Подстанция №2", text: "" },
-          { icon: "👨‍⚕️", title: "Сериков Е.К.", sub: "Подстанция №3", text: "" }
+          { icon: "💊", title: "Адреналин (Эпинефрин)", sub: "Адреномиметик", text: "Анафилаксиялық шок және ЖӨР кезіндегі дозалары." },
+          { icon: "💊", title: "Амиодарон (Кордарон)", sub: "Антиаритмиялық препарат", text: "Қолдану көрсеткіштері, енгізу жылдамдығы және қарсы көрсеткіштері." },
+          { icon: "🧪", title: "Магний сульфаты 25%", sub: "Антиконвульсант / Вазодилататор", text: "Гипертониялық криз және эклампсия кезіндегі қолдану тәсілі." }
         ]
       },
-      narcotics: {
-        name: "Наркотические препараты", short: "Наркотические", icon: "⚠️", color: "var(--narc)",
-        note: "Справочная информация. Сверяйтесь с действующими приказами и протоколами МЗ РК.",
+      ref: {
+        name: "Анықтамалық",
+        icon: "📖",
+        color: "var(--ref)",
+        note: "Аға дәрігерлер байланысы, МКБ-10 кодтары және қосалқы станциялар.",
         items: [
-          { icon: "💉", title: "Название препарата 1", sub: "Форма выпуска", text: "Правила хранения, учёта и списания — вставьте текст из действующего приказа." },
-          { icon: "💉", title: "Название препарата 2", sub: "Форма выпуска", text: "" }
-        ]
-      },
-      meds: {
-        name: "Лекарственные препараты", short: "Лекарства", icon: "💊", color: "var(--med)",
-        note: "Справочная информация. Дозы и показания сверяйте с действующими протоколами.",
-        items: [
-          { icon: "💊", title: "Название препарата 1", sub: "Группа", text: "Показания, противопоказания, форма выпуска." },
-          { icon: "💊", title: "Название препарата 2", sub: "Группа", text: "" },
-          { icon: "🧪", title: "Название препарата 3", sub: "Группа", text: "" }
-        ]
-      }
-    }
-  }
-};
-/* ============================ КОНЕЦ НАСТРОЕК ============================ */
-
-const tg = window.Telegram && Telegram.WebApp;
-if (tg) { tg.ready(); tg.expand(); document.documentElement.dataset.theme = tg.colorScheme; }
-
-const $ = s => document.querySelector(s);
-const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const ico = s => /\.(png|jpe?g|svg|webp|gif)$/i.test(s || "") ? `<img src="${esc(s)}" alt="">` : esc(s);
-
-let lang = localStorage.getItem("smp_lang") || "kk";
-if (!DATA[lang]) lang = "kk";
-
-let cur = "home", q = "", openIndex = null;
-
-$("#logo").src = LOGO_FILE;
-
-function applyLang() {
-  const d = DATA[lang];
-  document.documentElement.lang = lang;
-  document.title = d.title;
-  $("#ttl").textContent = d.title;
-  $("#sub").textContent = d.subtitle;
-  $("#langBtn").textContent = d.btnLabel;
-  $("#search").placeholder = d.ui.searchPlaceholder;
-  $("#closeBtn").textContent = d.ui.close;
-
-  $("#nav").innerHTML =
-    `<button data-k="home" style="--c:var(--head)"><span>🏠</span>${esc(d.ui.homeNav)}</button>` +
-    Object.entries(d.sections).map(([k, s]) =>
-      `<button data-k="${k}" style="--c:${s.color}"><span>${ico(s.icon)}</span>${esc(s.short)}</button>`).join("");
-
-  render();
-
-  // Если открыто окно с карточкой — обновляем его текст на новом языке
-  if (!$("#sheet").hidden && openIndex !== null && cur !== "home") {
-    openItem(openIndex);
-  }
-}
-
-function render() {
-  const d = DATA[lang];
-  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.k === cur));
-  $("#search").hidden = cur === "home";
-  const v = $("#view");
-
-  if (cur === "home") {
-    v.innerHTML = `<h2>${esc(d.ui.homeTitle)}</h2><div class="tiles">` +
-      Object.entries(d.sections).map(([k, s]) =>
-        `<button class="tile" data-k="${k}" style="--c:${s.color}"><i>${ico(s.icon)}</i><b>${esc(s.name)}</b><small>${esc(d.ui.count)} ${s.items.length}</small></button>`).join("") +
-      `</div>`;
-    return;
-  }
-
-  const s = d.sections[cur], t = q.trim().toLowerCase();
-  const rows = s.items.map((it, i) => ({ it, i })).filter(({ it }) =>
-    !t || [it.title, it.sub, it.text].join(" ").toLowerCase().includes(t));
-
-  v.innerHTML = `<h2>${esc(s.name)}</h2>` + (s.note ? `<div class="note">${esc(s.note)}</div>` : "") +
-    (rows.length ? rows.map(({ it, i }) =>
-      `<button class="row" data-i="${i}" style="--c:${s.color}"><span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span></button>`).join("")
-      : `<div class="empty">${esc(d.ui.empty)}</div>`);
-}
-
-function openItem(i) {
-  openIndex = i;
-  const d = DATA[lang];
-  const it = d.sections[cur].items[i];
-  if (!it) return;
-  $("#shd").innerHTML = `<span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span>`;
-  $("#stx").textContent = it.text || d.ui.noText;
-  $("#sheet").hidden = false;
-}
-
-$("#langBtn").addEventListener("click", () => {
-  lang = lang === "kk" ? "ru" : "kk";
-  localStorage.setItem("smp_lang", lang);
-  applyLang();
-});
-
-document.addEventListener("click", e => {
-  const t = e.target.closest("[data-k],[data-i],[data-close]");
-  if (!t) return;
-  if (t.dataset.close !== undefined) { $("#sheet").hidden = true; openIndex = null; return; }
-  if (t.dataset.k) { cur = t.dataset.k; q = ""; $("#search").value = ""; render(); window.scrollTo(0, 0); return; }
-  if (t.dataset.i) openItem(+t.dataset.i);
-});
-
-$("#search").addEventListener("input", e => { q = e.target.value; render(); });
-
-applyLang();
-</script>
-</body>
-</html>
+          { icon: "👨‍⚕️", title: "Аға дәрігерлер байланысы", sub: "Орталық және қосалқы станциялар", text: "Кеңес алу телефондары мен і

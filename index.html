@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="kk">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -14,11 +14,14 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-ap
 padding-bottom:calc(78px + env(safe-area-inset-bottom))}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;text-align:left}
 header{background:var(--head);color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:5}
-.brand{display:flex;align-items:center;gap:12px}
+.top-bar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
 .logo{position:relative;width:64px;height:64px;display:grid;place-items:center;font-size:32px;flex:none}
 .logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-.brand h1{margin:0;font-size:20px;line-height:1.1}
-.brand p{margin:2px 0 0;font-size:13px;opacity:.7}
+.brand h1{margin:0;font-size:18px;line-height:1.15}
+.brand p{margin:3px 0 0;font-size:13px;opacity:.75}
+.lang-btn{flex:none;padding:7px 11px;border-radius:10px;background:rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:700;letter-spacing:.5px;text-align:center}
+.lang-btn:active{background:rgba(255,255,255,.28)}
 #search{width:100%;margin-top:12px;padding:11px 14px;border-radius:12px;border:0;font:inherit;background:rgba(255,255,255,.12);color:#fff}
 #search::placeholder{color:rgba(255,255,255,.6)}
 main{padding:16px;max-width:640px;margin:0 auto}
@@ -53,55 +56,114 @@ nav button.on{color:var(--ink);font-weight:600;border-top-color:var(--c,var(--na
 </head>
 <body>
 <header>
-  <div class="brand">
-    <div class="logo">✚<img id="logo" alt="" onerror="this.remove()"></div>
-    <div><h1 id="ttl"></h1><p id="sub"></p></div>
+  <div class="top-bar">
+    <div class="brand">
+      <div class="logo">✚<img id="logo" alt="" onerror="this.remove()"></div>
+      <div><h1 id="ttl"></h1><p id="sub"></p></div>
+    </div>
+    <button id="langBtn" class="lang-btn" type="button" aria-label="Тілді ауыстыру / Сменить язык"></button>
   </div>
-  <input id="search" type="search" placeholder="Поиск" hidden>
+  <input id="search" type="search" hidden>
 </header>
 <main id="view"></main>
 <nav id="nav"></nav>
 <div id="sheet" hidden>
   <div class="bd" data-close></div>
-  <div class="pn"><div class="hd" id="shd"></div><div class="tx" id="stx"></div><button class="close" data-close>Закрыть</button></div>
+  <div class="pn"><div class="hd" id="shd"></div><div class="tx" id="stx"></div><button class="close" id="closeBtn" data-close></button></div>
 </div>
 
 <script>
 /* ============ НАСТРОЙКИ: здесь меняете тексты, значки и картинки ============
    icon: эмодзи (например "💊") ИЛИ имя файла картинки (например "ivanov.png"),
-   файл нужно загрузить в тот же репозиторий рядом с index.html.            */
-const CONFIG = {
-  title: "Алматы қаласының жедел медициналық жәрдем қызметі",
-  subtitle: "№10 қ/с фельдшер көмекшісі",
-  logo: "logo.png"            // загрузите свой логотип с этим именем
-};
+   файл нужно загрузить в тот же репозиторий рядом с index.html.             */
 
-const SECTIONS = {
-  doctors: {
-    name: "Старшие врачи", short: "Врачи", icon: "🩺", color: "var(--doc)",
-    note: "",
-    items: [
-      { icon: "👨‍⚕️", title: "Иванов И.И.", sub: "Подстанция №1", text: "Здесь можно добавить любую информацию." },
-      { icon: "👩‍⚕️", title: "Петрова А.С.", sub: "Подстанция №2", text: "" },
-      { icon: "👨‍⚕️", title: "Сериков Е.К.", sub: "Подстанция №3", text: "" }
-    ]
+const LOGO_FILE = "logo.png"; // загрузите свой логотип с этим именем
+
+const DATA = {
+  kk: {
+    btnLabel: "РУС", // на кнопке показывается язык, на который можно переключиться
+    title: "Алматы қаласының жедел медициналық жәрдем қызметі",
+    subtitle: "№10 қ/с фельдшер көмекшісі",
+    ui: {
+      homeNav: "Басты бет",
+      homeTitle: "Не табу керек?",
+      count: "Жазбалар саны:",
+      searchPlaceholder: "Іздеу",
+      empty: "Ештеңе табылмады. Басқа сөз жазып көріңіз.",
+      noText: "Сипаттама әлі қосылмаған.",
+      close: "Жабу"
+    },
+    sections: {
+      doctors: {
+        name: "Аға дәрігерлер", short: "Дәрігерлер", icon: "🩺", color: "var(--doc)",
+        note: "",
+        items: [
+          { icon: "👨‍⚕️", title: "Иванов И.И.", sub: "№1 қосалқы станция", text: "Мұнда кез келген ақпаратты қосуға болады." },
+          { icon: "👩‍⚕️", title: "Петрова А.С.", sub: "№2 қосалқы станция", text: "" },
+          { icon: "👨‍⚕️", title: "Сериков Е.К.", sub: "№3 қосалқы станция", text: "" }
+        ]
+      },
+      narcotics: {
+        name: "Есірткілік препараттар", short: "Есірткілік", icon: "⚠️", color: "var(--narc)",
+        note: "Анықтамалық ақпарат. ҚР ДСМ қолданыстағы бұйрықтары мен хаттамаларымен салыстырыңыз.",
+        items: [
+          { icon: "💉", title: "Препарат атауы 1", sub: "Шығарылу түрі", text: "Сақтау, есепке алу және есептен шығару ережелері — қолданыстағы бұйрықтан мәтін қойыңыз." },
+          { icon: "💉", title: "Препарат атауы 2", sub: "Шығарылу түрі", text: "" }
+        ]
+      },
+      meds: {
+        name: "Дәрілік препараттар", short: "Дәрілер", icon: "💊", color: "var(--med)",
+        note: "Анықтамалық ақпарат. Дозалар мен көрсеткіштерді қолданыстағы хаттамалармен салыстырыңыз.",
+        items: [
+          { icon: "💊", title: "Препарат атауы 1", sub: "Тобы", text: "Көрсеткіштері, қарсы көрсеткіштері, шығарылу түрі." },
+          { icon: "💊", title: "Препарат атауы 2", sub: "Тобы", text: "" },
+          { icon: "🧪", title: "Препарат атауы 3", sub: "Тобы", text: "" }
+        ]
+      }
+    }
   },
-  narcotics: {
-    name: "Наркотические препараты", short: "Наркотические", icon: "⚠️", color: "var(--narc)",
-    note: "Справочная информация. Сверяйтесь с действующими приказами и протоколами МЗ РК.",
-    items: [
-      { icon: "💉", title: "Название препарата 1", sub: "Форма выпуска", text: "Правила хранения, учёта и списания — вставьте текст из действующего приказа." },
-      { icon: "💉", title: "Название препарата 2", sub: "Форма выпуска", text: "" }
-    ]
-  },
-  meds: {
-    name: "Лекарственные препараты", short: "Лекарства", icon: "💊", color: "var(--med)",
-    note: "Справочная информация. Дозы и показания сверяйте с действующими протоколами.",
-    items: [
-      { icon: "💊", title: "Название препарата 1", sub: "Группа", text: "Показания, противопоказания, форма выпуска." },
-      { icon: "💊", title: "Название препарата 2", sub: "Группа", text: "" },
-      { icon: "🧪", title: "Название препарата 3", sub: "Группа", text: "" }
-    ]
+
+  ru: {
+    btnLabel: "ҚАЗ",
+    title: "Служба скорой медицинской помощи г. Алматы",
+    subtitle: "Помощник фельдшера п/с №10",
+    ui: {
+      homeNav: "Главная",
+      homeTitle: "Что нужно найти?",
+      count: "Записей:",
+      searchPlaceholder: "Поиск",
+      empty: "Ничего не найдено. Попробуйте другое слово.",
+      noText: "Описание пока не добавлено.",
+      close: "Закрыть"
+    },
+    sections: {
+      doctors: {
+        name: "Старшие врачи", short: "Врачи", icon: "🩺", color: "var(--doc)",
+        note: "",
+        items: [
+          { icon: "👨‍⚕️", title: "Иванов И.И.", sub: "Подстанция №1", text: "Здесь можно добавить любую информацию." },
+          { icon: "👩‍⚕️", title: "Петрова А.С.", sub: "Подстанция №2", text: "" },
+          { icon: "👨‍⚕️", title: "Сериков Е.К.", sub: "Подстанция №3", text: "" }
+        ]
+      },
+      narcotics: {
+        name: "Наркотические препараты", short: "Наркотические", icon: "⚠️", color: "var(--narc)",
+        note: "Справочная информация. Сверяйтесь с действующими приказами и протоколами МЗ РК.",
+        items: [
+          { icon: "💉", title: "Название препарата 1", sub: "Форма выпуска", text: "Правила хранения, учёта и списания — вставьте текст из действующего приказа." },
+          { icon: "💉", title: "Название препарата 2", sub: "Форма выпуска", text: "" }
+        ]
+      },
+      meds: {
+        name: "Лекарственные препараты", short: "Лекарства", icon: "💊", color: "var(--med)",
+        note: "Справочная информация. Дозы и показания сверяйте с действующими протоколами.",
+        items: [
+          { icon: "💊", title: "Название препарата 1", sub: "Группа", text: "Показания, противопоказания, форма выпуска." },
+          { icon: "💊", title: "Название препарата 2", sub: "Группа", text: "" },
+          { icon: "🧪", title: "Название препарата 3", sub: "Группа", text: "" }
+        ]
+      }
+    }
   }
 };
 /* ============================ КОНЕЦ НАСТРОЕК ============================ */
@@ -113,55 +175,87 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ico = s => /\.(png|jpe?g|svg|webp|gif)$/i.test(s || "") ? `<img src="${esc(s)}" alt="">` : esc(s);
 
-let cur = "home", q = "";
+let lang = localStorage.getItem("smp_lang") || "kk";
+if (!DATA[lang]) lang = "kk";
 
-$("#ttl").textContent = CONFIG.title;
-$("#sub").textContent = CONFIG.subtitle;
-$("#logo").src = CONFIG.logo;
-document.title = CONFIG.title;
+let cur = "home", q = "", openIndex = null;
 
-$("#nav").innerHTML =
-  `<button data-k="home" style="--c:var(--head)"><span>🏠</span>Главная</button>` +
-  Object.entries(SECTIONS).map(([k, s]) =>
-    `<button data-k="${k}" style="--c:${s.color}"><span>${ico(s.icon)}</span>${esc(s.short)}</button>`).join("");
+$("#logo").src = LOGO_FILE;
+
+function applyLang() {
+  const d = DATA[lang];
+  document.documentElement.lang = lang;
+  document.title = d.title;
+  $("#ttl").textContent = d.title;
+  $("#sub").textContent = d.subtitle;
+  $("#langBtn").textContent = d.btnLabel;
+  $("#search").placeholder = d.ui.searchPlaceholder;
+  $("#closeBtn").textContent = d.ui.close;
+
+  $("#nav").innerHTML =
+    `<button data-k="home" style="--c:var(--head)"><span>🏠</span>${esc(d.ui.homeNav)}</button>` +
+    Object.entries(d.sections).map(([k, s]) =>
+      `<button data-k="${k}" style="--c:${s.color}"><span>${ico(s.icon)}</span>${esc(s.short)}</button>`).join("");
+
+  render();
+
+  // Если открыто окно с карточкой — обновляем его текст на новом языке
+  if (!$("#sheet").hidden && openIndex !== null && cur !== "home") {
+    openItem(openIndex);
+  }
+}
 
 function render() {
+  const d = DATA[lang];
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.k === cur));
   $("#search").hidden = cur === "home";
   const v = $("#view");
+
   if (cur === "home") {
-    v.innerHTML = `<h2>Что нужно найти?</h2><div class="tiles">` +
-      Object.entries(SECTIONS).map(([k, s]) =>
-        `<button class="tile" data-k="${k}" style="--c:${s.color}"><i>${ico(s.icon)}</i><b>${esc(s.name)}</b><small>Записей: ${s.items.length}</small></button>`).join("") +
+    v.innerHTML = `<h2>${esc(d.ui.homeTitle)}</h2><div class="tiles">` +
+      Object.entries(d.sections).map(([k, s]) =>
+        `<button class="tile" data-k="${k}" style="--c:${s.color}"><i>${ico(s.icon)}</i><b>${esc(s.name)}</b><small>${esc(d.ui.count)} ${s.items.length}</small></button>`).join("") +
       `</div>`;
     return;
   }
-  const s = SECTIONS[cur], t = q.trim().toLowerCase();
+
+  const s = d.sections[cur], t = q.trim().toLowerCase();
   const rows = s.items.map((it, i) => ({ it, i })).filter(({ it }) =>
     !t || [it.title, it.sub, it.text].join(" ").toLowerCase().includes(t));
+
   v.innerHTML = `<h2>${esc(s.name)}</h2>` + (s.note ? `<div class="note">${esc(s.note)}</div>` : "") +
     (rows.length ? rows.map(({ it, i }) =>
       `<button class="row" data-i="${i}" style="--c:${s.color}"><span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span></button>`).join("")
-      : `<div class="empty">Ничего не найдено. Попробуйте другое слово.</div>`);
+      : `<div class="empty">${esc(d.ui.empty)}</div>`);
 }
 
 function openItem(i) {
-  const it = SECTIONS[cur].items[i];
+  openIndex = i;
+  const d = DATA[lang];
+  const it = d.sections[cur].items[i];
+  if (!it) return;
   $("#shd").innerHTML = `<span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span>`;
-  $("#stx").textContent = it.text || "Описание пока не добавлено.";
+  $("#stx").textContent = it.text || d.ui.noText;
   $("#sheet").hidden = false;
 }
+
+$("#langBtn").addEventListener("click", () => {
+  lang = lang === "kk" ? "ru" : "kk";
+  localStorage.setItem("smp_lang", lang);
+  applyLang();
+});
 
 document.addEventListener("click", e => {
   const t = e.target.closest("[data-k],[data-i],[data-close]");
   if (!t) return;
-  if (t.dataset.close !== undefined) { $("#sheet").hidden = true; return; }
+  if (t.dataset.close !== undefined) { $("#sheet").hidden = true; openIndex = null; return; }
   if (t.dataset.k) { cur = t.dataset.k; q = ""; $("#search").value = ""; render(); window.scrollTo(0, 0); return; }
   if (t.dataset.i) openItem(+t.dataset.i);
 });
+
 $("#search").addEventListener("input", e => { q = e.target.value; render(); });
 
-render();
+applyLang();
 </script>
 </body>
 </html>

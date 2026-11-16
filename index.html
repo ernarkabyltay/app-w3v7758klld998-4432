@@ -14,20 +14,18 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-ap
 padding-bottom:calc(78px + env(safe-area-inset-bottom))}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;text-align:left}
 header{background:var(--head);color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:5}
-.top-bar{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand{display:flex;align-items:center;gap:12px}
 .logo{position:relative;width:64px;height:64px;display:grid;place-items:center;font-size:32px;flex:none}
 .logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.brand-txt{flex:1;min-width:0}
 .brand h1{margin:0;font-size:18px;line-height:1.15}
 .brand p{margin:3px 0 0;font-size:13px;opacity:.75}
-.lang-btn{flex:none;padding:7px 11px;border-radius:10px;background:rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:700;letter-spacing:.5px;text-align:center}
-.lang-btn:active{background:rgba(255,255,255,.28)}
+.lang{flex:none;padding:7px 10px;border-radius:10px;background:rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:700}
 #search{width:100%;margin-top:12px;padding:11px 14px;border-radius:12px;border:0;font:inherit;background:rgba(255,255,255,.12);color:#fff}
 #search::placeholder{color:rgba(255,255,255,.6)}
 main{padding:16px;max-width:640px;margin:0 auto}
 h2{margin:4px 0 14px;font-size:22px}
-.back-btn{display:inline-flex;align-items:center;gap:6px;margin-bottom:12px;padding:8px 12px;border-radius:10px;background:var(--card);color:var(--ink);font-size:14px;font-weight:600;box-shadow:0 1px 0 var(--line)}
-.back-btn:active{opacity:.75}
+.back{display:inline-block;margin-bottom:12px;padding:8px 12px;border-radius:10px;background:var(--card);font-size:14px;font-weight:600;box-shadow:0 1px 0 var(--line)}
 .tiles{display:grid;gap:12px}
 .tile{display:flex;flex-direction:column;gap:4px;padding:16px 16px 16px 20px;border-radius:var(--r);background:var(--card);border-left:6px solid var(--c);box-shadow:0 1px 0 var(--line)}
 .tile i{font-style:normal;font-size:30px;line-height:1;margin-bottom:6px}
@@ -58,112 +56,198 @@ nav button.on{color:var(--ink);font-weight:600;border-top-color:var(--c,var(--na
 </head>
 <body>
 <header>
-  <div class="top-bar">
-    <div class="brand">
-      <div class="logo">✚<img id="logo" alt="" onerror="this.remove()"></div>
-      <div><h1 id="ttl"></h1><p id="sub"></p></div>
-    </div>
-    <button id="langBtn" class="lang-btn" type="button" aria-label="Тілді ауыстыру / Сменить язык"></button>
+  <div class="brand">
+    <div class="logo">✚<img id="logo" alt="" onerror="this.remove()"></div>
+    <div class="brand-txt"><h1 id="ttl"></h1><p id="sub"></p></div>
+    <button class="lang" id="langBtn" type="button">РУС</button>
   </div>
-  <input id="search" type="search" hidden>
+  <input id="search" type="search" placeholder="Поиск" hidden>
 </header>
 <main id="view"></main>
 <nav id="nav"></nav>
 <div id="sheet" hidden>
   <div class="bd" data-close></div>
-  <div class="pn"><div class="hd" id="shd"></div><div class="tx" id="stx"></div><button class="close" id="closeBtn" data-close></button></div>
+  <div class="pn"><div class="hd" id="shd"></div><div class="tx" id="stx"></div><button class="close" id="clsBtn" data-close>Закрыть</button></div>
 </div>
 
 <script>
-/* ============ НАСТРОЙКИ: здесь меняете тексты, значки и картинки ============
-   icon: эмодзи (например "💊") ИЛИ имя файла картинки (например "ivanov.png"),
-   файл нужно загрузить в тот же репозиторий рядом с index.html.             */
+const LOGO = "logo.png";
 
-const LOGO_FILE = "logo.png"; // загрузите свой логотип с этим именем
-
-const DATA = {
+const DB = {
   kk: {
-    btnLabel: "РУС",
+    btn: "РУС",
     title: "Алматы қаласының жедел медициналық жәрдем қызметі",
     subtitle: "№10 қ/с фельдшер көмекшісі",
-    ui: {
-      homeTitle: "Бөлімді таңдаңыз",
-      backHome: "← Басты бетке оралу",
-      count: "Жазбалар саны:",
-      searchPlaceholder: "Бөлім ішінен іздеу...",
-      empty: "Ештеңе табылмады. Басқа сөз жазып көріңіз.",
-      noText: "Сипаттама әлі қосылмаған.",
-      close: "Жабу"
-    },
-    // 4 вкладки в нижнем меню
-    nav: [
-      { key: "home", label: "Басты бет", icon: "🏠", color: "var(--head)" },
-      { key: "cards", label: "Шақыру карталары", icon: "📋", color: "var(--doc)" },
-      { key: "meds", label: "Дәрілік препараттар", icon: "💊", color: "var(--med)" },
-      { key: "ref", label: "Анықтамалық", icon: "📖", color: "var(--ref)" }
-    ],
-    // Разделы на главной странице (открываются как каталоги)
-    homeSections: ["safety", "narcotics", "briefing"],
-    // Содержимое всех каталогов (и с главной страницы, и с нижнего меню)
+    homeNav: "Басты бет",
+    homeTitle: "Бөлімді таңдаңыз",
+    back: "← Басты бетке",
+    count: "Жазбалар:",
+    search: "Іздеу",
+    empty: "Ештеңе табылмады.",
+    noText: "Сипаттама әлі қосылмаған.",
+    close: "Жабу",
+    homeKeys: ["safety", "narcotics", "briefing"],
+    navKeys: ["cards", "meds", "ref"],
     sections: {
       safety: {
-        name: "Қауіпсіздік кодтары",
-        icon: "🛡️",
-        color: "var(--warn)",
-        note: "Төтенше жағдайлар мен қауіпсіздік алгоритмдері.",
+        name: "Қауіпсіздік кодтары", short: "Кодтар", icon: "🛡️", color: "var(--warn)",
+        note: "Төтенше жағдайлар кезіндегі іс-әрекет алгоритмдері.",
         items: [
-          { icon: "🔴", title: "Қызыл код", sub: "Өрт қауіпсіздігі", text: "Өрт шыққан жағдайдағы бригаданың іс-әрекет алгоритмі..." },
-          { icon: "🔵", title: "Көк код", sub: "Жүрек-өкпе реанимациясы", text: "Клиникалық өлім кезіндегі шұғыл әрекеттер..." },
-          { icon: "🟡", title: "Сары код", sub: "Агрессиялық пациент", text: "Қауіпті жағдайда өзін-өзі қорғау және полиция шақыру тәртібі..." }
+          { icon: "🔴", title: "Қызыл код", sub: "Өрт қауіпсіздігі", text: "Өрт шыққан жағдайдағы бригаданың іс-әрекет алгоритмі." },
+          { icon: "🔵", title: "Көк код", sub: "Жүрек-өкпе реанимациясы", text: "Клиникалық өлім кезіндегі шұғыл әрекеттер." },
+          { icon: "🟡", title: "Сары код", sub: "Агрессиялық пациент", text: "Қауіпті жағдайда өзін-өзі қорғау және полиция шақыру тәртібі." }
         ]
       },
       narcotics: {
-        name: "Есірткілік және психотроптық препараттар",
-        icon: "⚠️",
-        color: "var(--narc)",
-        note: "Анықтамалық ақпарат. ҚР ДСМ қолданыстағы бұйрықтары мен хаттамаларымен салыстырыңыз.",
+        name: "Есірткілік және психотроптық препараттар", short: "Есірткілік", icon: "⚠️", color: "var(--narc)",
+        note: "Анықтамалық ақпарат. ҚР ДСМ қолданыстағы бұйрықтарымен салыстырыңыз.",
         items: [
-          { icon: "💉", title: "Морфин 1% - 1,0 мл", sub: "Есірткілік анальгетик", text: "Сақтау, есепке алу, қолдану және бос ампулаларды тапсыру ережелері." },
+          { icon: "💉", title: "Морфин 1% - 1,0 мл", sub: "Есірткілік анальгетик", text: "Сақтау, есепке алу және бос ампулаларды тапсыру ережелері." },
           { icon: "💉", title: "Фентанил 0,005% - 2,0 мл", sub: "Есірткілік анальгетик", text: "Көрсеткіштері, дозалануы және есептен шығару тәртібі." },
-          { icon: "💉", title: "Диазепам (Сибазон) 0,5% - 2,0 мл", sub: "Психотроптық препарат", text: "Құрысу синдромы кезінде қолдану және есепке алу тәртібі." }
+          { icon: "💉", title: "Диазепам 0,5% - 2,0 мл", sub: "Психотроптық препарат", text: "Құрысу синдромы кезінде қолдану және есепке алу тәртібі." }
         ]
       },
       briefing: {
-        name: "Планёрка",
-        icon: "📢",
-        color: "var(--doc)",
-        note: "Ауысым алдындағы ақпарат, бұйрықтар және өзекті хабарламалар.",
+        name: "Планёрка", short: "Планёрка", icon: "📢", color: "var(--doc)",
+        note: "Ауысым алдындағы ақпарат және өзекті хабарламалар.",
         items: [
           { icon: "📌", title: "Ауысымдағы өзгерістер", sub: "Жаңартылған ақпарат", text: "Мұнда планёркада айтылған негізгі талаптар мен жаңалықтар жазылады." },
           { icon: "🚑", title: "Госпитализация кестесі", sub: "Кезекші стационарлар", text: "Бейінді ауруханалардың кезекшілік күндері мен қабылдау тәртібі." }
         ]
       },
       cards: {
-        name: "Шақыру карталары",
-        icon: "📋",
-        color: "var(--doc)",
+        name: "Шақыру карталары", short: "Карталар", icon: "📋", color: "var(--doc)",
         note: "Шақыру картасын (№110/у нысаны) дұрыс толтыру үлгілері.",
         items: [
           { icon: "📄", title: "Жіті коронарлық синдром (ЖКС)", sub: "Толтыру үлгісі", text: "Шағымдары, анамнез, объективті статус, ЭКГ сипаттамасы және көрсетілген көмек." },
-          { icon: "📄", title: "Артериялық гипертензия", sub: "Толтыру үлгісі", text: "АҚ өлшеу көрсеткіштері, неврологиялық статус және терапия." },
-          { icon: "📄", title: "ЖРВИ / Гипертермия", sub: "Толтыру үлгісі", text: "Статус сипаттамасы және актив беру тәртібі." }
+          { icon: "📄", title: "Артериялық гипертензия", sub: "Толтыру үлгісі", text: "АҚ өлшеу көрсеткіштері, неврологиялық статус және терапия." }
         ]
       },
       meds: {
-        name: "Дәрілік препараттар",
-        icon: "💊",
-        color: "var(--med)",
-        note: "Анықтамалық ақпарат. Дозалар мен көрсеткіштерді қолданыстағы хаттамалармен салыстырыңыз.",
+        name: "Дәрілік препараттар", short: "Дәрілер", icon: "💊", color: "var(--med)",
+        note: "Анықтамалық ақпарат. Дозалар мен көрсеткіштерді хаттамалармен салыстырыңыз.",
         items: [
           { icon: "💊", title: "Адреналин (Эпинефрин)", sub: "Адреномиметик", text: "Анафилаксиялық шок және ЖӨР кезіндегі дозалары." },
-          { icon: "💊", title: "Амиодарон (Кордарон)", sub: "Антиаритмиялық препарат", text: "Қолдану көрсеткіштері, енгізу жылдамдығы және қарсы көрсеткіштері." },
-          { icon: "🧪", title: "Магний сульфаты 25%", sub: "Антиконвульсант / Вазодилататор", text: "Гипертониялық криз және эклампсия кезіндегі қолдану тәсілі." }
+          { icon: "💊", title: "Амиодарон (Кордарон)", sub: "Антиаритмиялық препарат", text: "Қолдану көрсеткіштері және енгізу жылдамдығы." }
         ]
       },
       ref: {
-        name: "Анықтамалық",
-        icon: "📖",
-        color: "var(--ref)",
-        note: "Аға дәрігерлер байланысы, МКБ-10 кодтары және қосалқы станциялар.",
+        name: "Анықтамалық", short: "Анықтамалық", icon: "📖", color: "var(--ref)",
+        note: "Аға дәрігерлер байланысы, МКБ-10 кодтары және стационарлар.",
         items: [
-          { icon: "👨‍⚕️", title: "Аға дәрігерлер байланысы", sub: "Орталық және қосалқы станциялар", text: "Кеңес алу телефондары мен і
+          { icon: "👨‍⚕️", title: "Аға дәрігерлер байланысы", sub: "Орталық және қосалқы станциялар", text: "Кеңес алу телефондары мен ішкі нөмірлер." },
+          { icon: "🏥", title: "Алматы стационарлары", sub: "Мекенжайлары мен бейіндері", text: "Қалалық клиникалық ауруханалар тізімі." }
+        ]
+      }
+    }
+  },
+
+  ru: {
+    btn: "ҚАЗ",
+    title: "Служба скорой медицинской помощи г. Алматы",
+    subtitle: "Помощник фельдшера п/с №10",
+    homeNav: "Главная",
+    homeTitle: "Выберите раздел",
+    back: "← На главную",
+    count: "Записей:",
+    search: "Поиск",
+    empty: "Ничего не найдено.",
+    noText: "Описание пока не добавлено.",
+    close: "Закрыть",
+    homeKeys: ["safety", "narcotics", "briefing"],
+    navKeys: ["cards", "meds", "ref"],
+    sections: {
+      safety: {
+        name: "Коды безопасности", short: "Коды", icon: "🛡️", color: "var(--warn)",
+        note: "Алгоритмы действий бригады при чрезвычайных ситуациях.",
+        items: [
+          { icon: "🔴", title: "Код Красный", sub: "Пожарная безопасность", text: "Алгоритм действий бригады при возгорании на подстанции или на вызове." },
+          { icon: "🔵", title: "Код Синий", sub: "Сердечно-лёгочная реанимация", text: "Экстренные действия при остановке кровообращения." },
+          { icon: "🟡", title: "Код Жёлтый", sub: "Агрессивный пациент", text: "Правила личной безопасности бригады и порядок вызова полиции." }
+        ]
+      },
+      narcotics: {
+        name: "Наркотические и психотропные препараты", short: "Наркотические", icon: "⚠️", color: "var(--narc)",
+        note: "Справочная информация. Сверяйтесь с действующими приказами МЗ РК.",
+        items: [
+          { icon: "💉", title: "Морфин 1% - 1,0 мл", sub: "Наркотический анальгетик", text: "Правила хранения, учёта, применения и сдача пустых ампул." },
+          { icon: "💉", title: "Фентанил 0,005% - 2,0 мл", sub: "Наркотический анальгетик", text: "Дозировки, особенности введения и порядок списания." },
+          { icon: "💉", title: "Диазепам 0,5% - 2,0 мл", sub: "Психотропный препарат", text: "Применение при судорожном синдроме и правила учёта." }
+        ]
+      },
+      briefing: {
+        name: "Планёрка", short: "Планёрка", icon: "📢", color: "var(--doc)",
+        note: "Актуальная информация со сменных планёрок, приказы и объявления.",
+        items: [
+          { icon: "📌", title: "Изменения в работе смены", sub: "Актуальные требования", text: "Здесь размещаются ключевые замечания, новые приказы и инструкции с планёрки." },
+          { icon: "🚑", title: "График госпитализации", sub: "Дежурные стационары", text: "Порядок и дни дежурств профильных стационаров г. Алматы." }
+        ]
+      },
+      cards: {
+        name: "Карты вызова", short: "Карты вызова", icon: "📋", color: "var(--doc)",
+        note: "Образцы оформления карты вызова скорой медицинской помощи (ф. 110/у).",
+        items: [
+          { icon: "📄", title: "Острый коронарный синдром (ОКС)", sub: "Образец описания", text: "Жалобы, анамнез, объективный статус, описание ЭКГ и объём помощи." },
+          { icon: "📄", title: "Артериальная гипертензия (Криз)", sub: "Образец описания", text: "Цифры АД, неврологический статус, проведённая терапия." }
+        ]
+      },
+      meds: {
+        name: "Лекарственные препараты", short: "Лекарства", icon: "💊", color: "var(--med)",
+        note: "Справочная информация. Дозы и показания сверяйте с протоколами.",
+        items: [
+          { icon: "💊", title: "Адреналин (Эпинефрин)", sub: "Адреномиметик", text: "Дозировки и пути введения при анафилактическом шоке и СЛР." },
+          { icon: "💊", title: "Амиодарон (Кордарон)", sub: "Антиаритмический препарат", text: "Показания, разведение и скорость введения." }
+        ]
+      },
+      ref: {
+        name: "Справочник", short: "Справочник", icon: "📖", color: "var(--ref)",
+        note: "Контакты старших врачей, коды МКБ-10 и адреса стационаров.",
+        items: [
+          { icon: "👨‍⚕️", title: "Контакты старших врачей", sub: "Центр и подстанции", text: "Телефоны для консультаций и оперативной связи." },
+          { icon: "🏥", title: "Стационары г. Алматы", sub: "Адреса и профили", text: "Список городских клинических больниц и приёмных покоев." }
+        ]
+      }
+    }
+  }
+};
+
+const tg = window.Telegram && Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); document.documentElement.dataset.theme = tg.colorScheme; }
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ico = s => /\.(png|jpe?g|svg|webp|gif)$/i.test(s || "") ? `<img src="${esc(s)}" alt="">` : esc(s);
+
+let lang = "kk", cur = "home", q = "", openIdx = null;
+$("#logo").src = LOGO;
+
+function initLang() {
+  const d = DB[lang];
+  document.documentElement.lang = lang;
+  document.title = d.title;
+  $("#ttl").textContent = d.title;
+  $("#sub").textContent = d.subtitle;
+  $("#langBtn").textContent = d.btn;
+  $("#search").placeholder = d.search;
+  $("#clsBtn").textContent = d.close;
+
+  $("#nav").innerHTML =
+    `<button data-k="home" style="--c:var(--head)"><span>🏠</span>${esc(d.homeNav)}</button>` +
+    d.navKeys.map(k => {
+      const s = d.sections[k];
+      return `<button data-k="${k}" style="--c:${s.color}"><span>${ico(s.icon)}</span>${esc(s.short)}</button>`; }).join("");  render(); if (!$("#sheet").hidden && openIdx !== null && cur !== "home") openItem(openIdx); }  function render() { const d = DB[lang]; const isHomeSub = d.homeKeys.indexOf(cur) !== -1; const navActive = isHomeSub ? "home" : cur;  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.k === navActive)); $("#search").hidden = cur === "home"; const v = $("#view");  if (cur === "home") { v.innerHTML = `<h2>${esc(d.homeTitle)}</h2><div class="tiles">` +
+      d.homeKeys.map(k => {
+        const s = d.sections[k];
+        return `<button class="tile" data-k="${k}" style="--c:${s.color}"><i>${ico(s.icon)}</i><b>${esc(s.name)}</b><small>${esc(d.count)}${s.items.length}</small></button>`;
+      }).join("") +
+      `</div>`;
+    return;
+  }
+
+  const s = d.sections[cur], t = q.trim().toLowerCase();
+  const rows = s.items.map((it, i) => ({ it, i })).filter(({ it }) =>
+    !t || [it.title, it.sub, it.text].join(" ").toLowerCase().includes(t));
+
+  v.innerHTML =
+    (isHomeSub ? `<button class="back" data-k="home">${esc(d.back)}</button>` : "") + `<h2>${esc(s.name)}</h2>` +
+    (s.note ? `<div class="note">${esc(s.note)}</div>

@@ -3,20 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Алматы қаласының жедел медициналық жәрдем қызметі</title>
+<title>Qolday 103</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
-  /* Новая цветовая схема на основе формы и айдентики */
   --bg: #f5f6f8;
   --card: #ffffff;
   --ink: #1e293b;
   --mute: #64748b;
   --line: #e2e8f0;
-  --head: #a81c1c;       /* Темно-красный (форма/шеврон) */
-  --accent: #f59e0b;     /* Теплый желтый (окантовка шеврона) */
+  --head: #a81c1c;       /* Фирменный красный (форма и шеврон СМП Алматы) */
+  --accent: #f59e0b;     /* Золотисто-жёлтый (окантовка шеврона и кузов авто) */
   --accent-light: #fef3c7;
-  --nav-bg: #0f172a;     /* Темно-синий/черный */
+  --nav-bg: #0f172a;     /* Глубокий тёмно-синий */
   --success: #10b981;
   --danger: #ef4444;
   --warn: #f59e0b;
@@ -40,83 +39,112 @@ body {
   padding-bottom: calc(84px + env(safe-area-inset-bottom));
 }
 button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; text-align: left; }
+
 header {
   background: var(--head); color: #fff;
-  padding: 16px 16px 14px; position: sticky; top: 0; z-index: 5;
+  padding: 14px 16px; position: sticky; top: 0; z-index: 5;
   border-bottom: 3px solid var(--accent);
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
-.brand { display: flex; align-items: center; gap: 14px; }
-.logo-container {
-  width: 52px; height: 52px; background: #fff; border-radius: 50%;
-  padding: 3px; display: flex; align-items: center; justify-content: center;
-  border: 2px solid var(--accent); flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo {
+  position: relative; width: 54px; height: 54px;
+  display: grid; place-items: center; font-size: 28px;
+  flex: none; overflow: hidden; border-radius: 12px;
 }
-/* Отрисованный векторный шеврон/логотип */
-.logo-svg { width: 100%; height: 100%; }
+.logo img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain;
+}
 .brand-txt { flex: 1; min-width: 0; }
-.brand h1 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; }
-.brand p { margin: 2px 0 0; font-size: 11px; opacity: .85; font-weight: 500; }
+.brand h1 { margin: 0; font-size: 20px; font-weight: 800; line-height: 1.15; letter-spacing: 0.01em; }
+.brand p { margin: 3px 0 0; font-size: 13px; opacity: .9; font-weight: 500; }
 .lang {
-  flex: none; padding: 6px 12px; border-radius: 20px;
-  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  flex: none; padding: 7px 12px; border-radius: 20px;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.28);
   color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase;
 }
-#search-container { position: relative; margin-top: 14px; }
+
+#search-container { position: relative; margin-top: 12px; }
 #search {
-  width: 100%; padding: 10px 14px 10px 40px; border-radius: 12px; border: 0;
-  font: inherit; background: rgba(255,255,255,0.12); color: #fff;
-  transition: all 0.2s ease;
+  width: 100%; padding: 10px 14px 10px 38px; border-radius: 12px; border: 0;
+  font: inherit; background: rgba(255,255,255,0.14); color: #fff;
+  transition: background 0.2s ease;
 }
-#search::placeholder { color: rgba(255,255,255,0.65); }
-#search:focus { background: rgba(255,255,255,0.18); outline: none; }
+#search::placeholder { color: rgba(255,255,255,0.7); }
+#search:focus { background: rgba(255,255,255,0.2); outline: none; }
 .search-icon {
-  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-  font-size: 16px; opacity: 0.6; pointer-events: none;
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 15px; opacity: 0.75; pointer-events: none;
 }
-main { padding: 18px 16px; max-width: 640px; margin: 0 auto; }
-h2 { margin: 0 0 16px; font-size: 20px; font-weight: 700; }
+
+main { padding: 16px; max-width: 640px; margin: 0 auto; }
+h2 { margin: 0 0 14px; font-size: 20px; font-weight: 700; }
+
+/* Рамка дисклеймера на главном экране */
+.disclaimer {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin: 0 0 18px; padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--card);
+  border: 1.5px solid var(--accent);
+  border-left: 5px solid var(--head);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  font-size: 12.5px; line-height: 1.45; color: var(--ink);
+}
+.disclaimer-ic {
+  font-size: 20px; line-height: 1.1; flex: none; margin-top: 1px;
+}
+[data-theme=dark] .disclaimer {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.45);
+  border-left-color: var(--danger);
+}
+
 .back {
   display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px;
   padding: 8px 14px; border-radius: 10px; background: var(--card);
   font-size: 13px; font-weight: 600; color: var(--head);
-  border: 1px solid var(--line); box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  border: 1px solid var(--line); box-shadow: 0 2px 4px rgba(0,0,0,0.03);
 }
+[data-theme=dark] .back { color: var(--accent); }
+
 .tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .tile {
   display: flex; flex-direction: column; gap: 8px; padding: 16px;
   border-radius: var(--r); background: var(--card);
   border: 1.5px solid var(--line);
   border-top: 4px solid var(--c);
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+  transition: transform 0.15s ease;
 }
 .tile:active { transform: scale(0.97); }
 .tile i { font-style: normal; font-size: 28px; line-height: 1; }
+.tile i img { width: 32px; height: 32px; object-fit: cover; border-radius: 6px; }
 .tile b { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.25; }
 .tile small { color: var(--mute); font-size: 12px; margin-top: auto; font-weight: 500; }
 
 .row {
   display: flex; align-items: center; gap: 14px; width: 100%; margin-bottom: 10px;
   padding: 14px 16px; background: var(--card); border-radius: var(--r);
-  border: 1px solid var(--line); border-left: 4px solid var(--c);
+  border: 1px solid var(--line); border-left: 5px solid var(--c);
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
-.row:active { background: rgba(0,0,0,0.01); }
+.row:active { opacity: 0.85; }
 .ic {
-  width: 44px; height: 44px; border-radius: 10px; background: var(--bg);
-  display: grid; place-items: center; font-size: 22px; flex: none;
+  width: 44px; height: 44px; border-radius: 11px; background: var(--bg);
+  display: grid; place-items: center; font-size: 22px; overflow: hidden; flex: none;
 }
+.ic img { width: 100%; height: 100%; object-fit: cover; }
 .row b { display: block; font-size: 15px; color: var(--ink); line-height: 1.3; }
-.row small { color: var(--mute); font-size: 12px; margin-top: 2px; display: block; }
+.row small { color: var(--mute); font-size: 12.5px; margin-top: 2px; display: block; }
 
 .note {
   margin: 0 0 16px; padding: 12px 14px; border-radius: 12px;
   background: var(--accent-light); color: #78350f; font-size: 13px;
   border: 1px solid #fde68a; line-height: 1.45;
 }
-[data-theme=dark] .note { background: rgba(245,158,11,0.1); color: #fef3c7; border-color: rgba(245,158,11,0.2); }
+[data-theme=dark] .note { background: rgba(245,158,11,0.12); color: #fef3c7; border-color: rgba(245,158,11,0.25); }
 
 .empty { padding: 40px 8px; text-align: center; color: var(--mute); font-size: 14px; }
 
@@ -130,7 +158,7 @@ nav {
 }
 nav button {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 12px 2px 8px; font-size: 11px; font-weight: 500;
+  padding: 11px 2px 8px; font-size: 11px; font-weight: 500;
   color: #94a3b8; border-top: 3px solid transparent; text-align: center;
 }
 nav button.on {
@@ -138,82 +166,78 @@ nav button.on {
   border-top-color: var(--accent);
 }
 nav button span { font-size: 20px; line-height: 1; }
+nav button span img { width: 20px; height: 20px; object-fit: contain; }
 
+/* Всплывающее окно карточки */
 #sheet[hidden], #imgModal[hidden] { display: none; }
-.bd { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 8; backdrop-filter: blur(2px); }
+.bd { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 8; backdrop-filter: blur(2px); }
 .pn {
   position: fixed; left: 0; right: 0; bottom: 0;
-  max-height: 85vh; overflow: auto; background: var(--card);
-  border-radius: 20px 20px 0 0; padding: 20px 20px calc(24px + env(safe-area-inset-bottom));
+  max-height: 86vh; overflow: auto; background: var(--card);
+  border-radius: 22px 22px 0 0; padding: 20px 18px calc(22px + env(safe-area-inset-bottom));
   z-index: 9; border-top: 3px solid var(--accent);
   animation: up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @keyframes up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@media(prefers-reduced-motion:reduce) { .pn { animation: none; } }
 
-.hd { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.hd { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
 .hd .ic { width: 52px; height: 52px; font-size: 26px; }
 .hd b { font-size: 18px; display: block; line-height: 1.25; font-weight: 700; }
 .hd small { color: var(--mute); font-size: 13px; margin-top: 2px; display: block; }
 
-.tx { margin-bottom: 24px; font-size: 14.5px; line-height: 1.6; }
-.tx h3 { margin: 20px 0 8px; font-size: 15px; font-weight: 700; color: var(--head); text-transform: uppercase; letter-spacing: 0.02em; }
+.tx { margin-bottom: 20px; font-size: 15px; line-height: 1.55; }
+.tx h3 { margin: 18px 0 8px; font-size: 15px; font-weight: 700; color: var(--head); text-transform: uppercase; letter-spacing: 0.02em; }
+[data-theme=dark] .tx h3 { color: var(--accent); }
 .tx h3:first-child { margin-top: 0; }
 .tx p { margin: 0 0 12px; }
-.tx ul { margin: 0 0 16px; padding-left: 20px; }
+.tx ul { margin: 0 0 14px; padding-left: 20px; }
 .tx li { margin-bottom: 6px; }
 
 .scheme {
-  margin: 14px 0; padding: 14px 16px; border-radius: 12px;
-  background: var(--bg); border-left: 4px solid var(--accent);
-  font-size: 13.5px; border: 1px solid var(--line); border-left-width: 4px;
+  margin: 14px 0; padding: 12px 14px; border-radius: 12px;
+  background: var(--bg); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+  font-size: 14px;
 }
-.scheme b { display: block; margin-bottom: 6px; font-size: 14px; color: var(--ink); }
-.scheme.alert { border-left-color: var(--danger); background: rgba(239, 68, 68, 0.03); }
+.scheme b { display: block; margin-bottom: 4px; font-size: 14.5px; color: var(--ink); }
+.scheme.alert { border-left-color: var(--danger); background: rgba(239, 68, 68, 0.05); }
 
-/* Копирование шаблона карты */
 .copy-btn {
-  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 16px;
-  padding: 8px 14px; border-radius: 8px; background: var(--bg);
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  padding: 8px 14px; border-radius: 10px; background: var(--bg);
   border: 1px solid var(--line); font-size: 13px; font-weight: 600; color: var(--ink);
 }
 .copy-btn:active { background: var(--line); }
 
-.tx img { display: block; width: 100%; max-height: 280px; object-fit: contain; border-radius: 12px; margin: 16px 0; background: var(--bg); border: 1.5px solid var(--line); cursor: zoom-in; }
+.tx img { display: block; width: 100%; max-height: 300px; object-fit: contain; border-radius: 12px; margin: 14px 0; background: var(--bg); border: 1.5px solid var(--line); cursor: zoom-in; }
+
 .close {
   width: 100%; padding: 14px; border-radius: 12px;
   background: var(--head); color: #fff; text-align: center;
-  font-weight: 700; font-size: 15px; border: 1px solid rgba(0,0,0,0.1);
+  font-weight: 700; font-size: 15px;
   box-shadow: 0 2px 8px rgba(168,28,28,0.25);
 }
-.close:active { background: #881337; }
+.close:active { opacity: 0.9; }
 
-#imgModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
-#imgModal img { max-width: 100%; max-height: 80vh; object-fit: contain; }
-#imgModal button { margin-top: 20px; padding: 10px 24px; border-radius: 10px; background: #fff; color: #000; font-weight: 600; }
+#imgModal { position: fixed; inset: 0; background: rgba(0,0,0,0.94); z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+#imgModal img { max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px; }
+#imgModal button { margin-top: 18px; padding: 10px 24px; border-radius: 10px; background: #fff; color: #000; font-weight: 600; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 </style>
 </head>
 <body>
 <header>
   <div class="brand">
-    <div class="logo-container">
-      <svg class="logo-svg" viewBox="0 0 100 100">
-        <!-- Векторный щит-шеврон на основе image_0.png -->
-        <path d="M50 5 L85 18 C85 65 50 92 50 92 C50 92 15 65 15 18 Z" fill="#a81c1c" stroke="#f59e0b" stroke-width="4"/>
-        <!-- Кадуцей/Медицинская звезда -->
-        <path d="M50 20 L58 35 L74 35 L62 45 L68 62 L50 52 L32 62 L38 45 L26 35 L42 35 Z" fill="#f59e0b"/>
-        <path d="M48 24 H52 V64 H48 Z" fill="#fff"/>
-        <path d="M44 32 C48 29, 52 29, 56 32 C56 35, 44 38, 44 41 C44 45, 56 45, 56 49" fill="none" stroke="#fff" stroke-width="3"/>
-      </svg>
-    </div>
+    <div class="logo">✚<img id="logo" alt="Qolday 103" onerror="this.remove()"></div>
     <div class="brand-txt">
-      <h1 id="ttl">Жедел медициналық жәрдем</h1>
-      <p id="sub">№10 қосалқы станциясы</p>
+      <h1 id="ttl">Qolday 103</h1>
+      <p id="sub">Фельдшер көмекшісі</p>
     </div>
     <button class="lang" id="langBtn" type="button">РУС</button>
   </div>
   <div id="search-container" hidden>
     <span class="search-icon">🔍</span>
-    <input id="search" type="search" placeholder="Поиск">
+    <input id="search" type="search" placeholder="Іздеу">
   </div>
 </header>
 
@@ -224,7 +248,7 @@ nav button span { font-size: 20px; line-height: 1; }
   <div class="bd" data-close></div>
   <div class="pn">
     <div class="hd" id="shd"></div>
-    <button class="copy-btn" id="cpBtn" hidden>📋 Мәтінді көшіру / Копировать</button>
+    <button class="copy-btn" id="cpBtn" hidden></button>
     <div class="tx" id="stx"></div>
     <button class="close" id="clsBtn" data-close>Жабу</button>
   </div>
@@ -236,16 +260,21 @@ nav button span { font-size: 20px; line-height: 1; }
 </div>
 
 <script>
+const LOGO = "logo.png";
+
 const DB = {
   kk: {
     btn: "РУС",
-    title: "Алматы қ. Жедел жәрдемі",
-    subtitle: "№10 қ/с фельдшер көмекшісі",
+    title: "Qolday 103",
+    subtitle: "Фельдшер көмекшісі",
+    disclaimer: "Бұл құрал тек анықтамалық-ақпараттық сипатқа ие және ресми медициналық бұйым немесе ЖМЖС бағдарламалық қамтамасыз етуі болып табылмайды. Медицина қызметкері барлық клиникалық шешімдер мен дозалау есептеулерін ҚР ДСМ өзекті клиникалық хаттамаларымен және препарат нұсқаулықтарымен міндетті түрде салыстыруы тиіс.",
     homeNav: "Басты бет",
-    homeTitle: "Қандай көмек қажет?",
-    back: "← Басты бет",
+    homeTitle: "Сізге қандай көмек қажет?",
+    back: "← Басты бетке",
     count: "жазба",
     search: "Іздеу...",
+    copy: "📋 Мәтінді көшіру",
+    copied: "Көшірілді!",
     empty: "Ештеңе табылмады.",
     noText: "Сипаттама әлі қосылмаған.",
     close: "Жабу",
@@ -262,8 +291,8 @@ const DB = {
         ]
       },
       narcotics: {
-        name: "Есірткілік және психотроптық", short: "Есірткілік", icon: "⚠️", color: "var(--danger)",
-        note: "Анықтамалық ақпарат. ҚР ДСМ бұйрықтарымен салыстырыңыз.",
+        name: "Есірткілік және психотроптық препараттар", short: "Есірткілік", icon: "⚠️", color: "var(--danger)",
+        note: "Анықтамалық ақпарат. ҚР ДСМ қолданыстағы бұйрықтары және клиникалық хаттамаларымен салыстырыңыз.",
         items: [
           {
             icon: "💉",
@@ -274,59 +303,76 @@ const DB = {
               <ul>
                 <li>Жіті коронарлық синдром (ЖКС), миокард инфарктісі;</li>
                 <li>Өкпе ісінуі (жүрек демікпесі);</li>
-                <li>Қарқынды ауырсыну синдромы.</li>
+                <li>Ауыр жарақаттар мен күйіктер кезіндегі қарқынды ауырсыну синдромы.</li>
               </ul>
+
               <div class="scheme">
-                <b>Енгізу схемасы:</b>
-                1 мл 1% ерітіндіні (10 мг) <b>9 мл 0,9% NaCl</b> ерітіндісінде сұйылту керек (1 мл = 1 мг).
+                <b>Енгізу схемасы және дозалау:</b>
+                1 мл 1% ерітіндіні (10 мг) <b>9 мл 0,9% NaCl</b> ерітіндісінде сұйылту керек (1 мл-де 1 мг морфин алынады).<br>
+                Көктамыр ішіне (к/і) баяу 2–5 мг-нан әр 5–15 минут сайын ауырсыну басылғанша енгізіледі.
               </div>
+
               <div class="scheme alert">
                 <b>Қарсы көрсеткіштері:</b>
-                Тыныс алу тежелуі, БЖМ, кома, 2 жасқа дейінгі балалар.
+                Тыныс алу орталығының тежелуі, бас-ми жарақаты (БМЖ), кома, анықталмаған «жіті іш», 2 жасқа дейінгі балалар.
               </div>
+
+              <h3>Есепке алу және сұлбасы</h3>
+              <p>Қолданылған ампула міндетті түрде аға фельдшерге тапсырылып, арнайы журналға тіркеледі.</p>
+              <img src="morphine_scheme.png" alt="Морфин сұлбасы" onerror="this.style.display='none'">
             `
-          }
+          },
+          { icon: "💉", title: "Фентанил 0,005% - 2,0 мл", sub: "Есірткілік анальгетик", text: "<p>Көрсеткіштері, дозалануы және есептен шығару тәртібі.</p>" },
+          { icon: "💉", title: "Диазепам 0,5% - 2,0 мл", sub: "Психотроптық препарат", text: "<p>Құрысу синдромы кезінде қолдану және есепке алу тәртібі.</p>" }
         ]
       },
       briefing: {
         name: "Планёрка", short: "Планёрка", icon: "📢", color: "var(--accent)",
-        note: "Ауысым алдындағы маңызды ақпараттар.",
+        note: "Ауысым алдындағы ақпарат және өзекті хабарламалар.",
         items: [
-          { icon: "📌", title: "Ауысымдағы өзгерістер", sub: "Жаңартылған ақпарат", text: "<p>Мұнда планёркада айтылған негізгі талаптар мен жаңалықтар жазылады.</p>" }
+          { icon: "📌", title: "Ауысымдағы өзгерістер", sub: "Жаңартылған ақпарат", text: "<p>Мұнда планёркада айтылған негізгі талаптар мен жаңалықтар жазылады.</p>" },
+          { icon: "🚑", title: "Госпитализация кестесі", sub: "Кезекші стационарлар", text: "<p>Бейінді ауруханалардың кезекшілік күндері мен қабылдау тәртібі.</p>" }
         ]
       },
       cards: {
-        name: "Шақырылу карталары", short: "Карталар", icon: "📋", color: "var(--doc)",
-        note: "Шақыру картасын (№110/у нысаны) толтыру үлгілері.",
+        name: "Шақыру карталары", short: "Карталар", icon: "📋", color: "var(--doc)",
+        note: "Шақыру картасын (№110/у нысаны) дұрыс толтыру үлгілері.",
         items: [
-          { icon: "📄", title: "Жіті коронарлық синдром (ЖКС)", sub: "Шағымдары, объективті статус, ЭКГ", text: "<p>Шағымдары: Төс артындағы басып, қысып ауыратын ауырсыну, сол жақ қолға, жауырынға беріледі. Объективті: Түрі мазасыз, терісі суық термен жабылған. ЭКГ: ST сегментінің көтерілуі. Көмек: Аспирин 300 мг, Клопидогрель 300-600 мг, Гепарин 5000 ӘБ к/і, Морфин 2-5 мг к/і.</p>" }
+          { icon: "📄", title: "Жіті коронарлық синдром (ЖКС)", sub: "Толтыру үлгісі", text: "<p>Шағымдары, анамнез, объективті статус, ЭКГ сипаттамасы және көрсетілген көмек.</p>" },
+          { icon: "📄", title: "Артериялық гипертензия", sub: "Толтыру үлгісі", text: "<p>АҚ өлшеу көрсеткіштері, неврологиялық статус және терапия.</p>" }
         ]
       },
       meds: {
         name: "Дәрілік препараттар", short: "Дәрілер", icon: "💊", color: "var(--success)",
-        note: "Жедел көмек көрсету хаттамалары.",
+        note: "Анықтамалық ақпарат. Дозалар мен көрсеткіштерді хаттамалармен салыстырыңыз.",
         items: [
-          { icon: "💊", title: "Адреналин (Эпинефрин)", sub: "Анафилаксия мен ЖӨР кезінде", text: "<p>Анафилаксия кезінде: бұлшықет ішіне 0,3-0.5 мл 0,1% ерітінді. ЖӨР кезінде: 1 мл к/і әр 3-5 минут сайын.</p>" }
+          { icon: "💊", title: "Адреналин (Эпинефрин)", sub: "Адреномиметик", text: "<p>Анафилаксиялық шок және ЖӨР кезіндегі дозалары.</p>" },
+          { icon: "💊", title: "Амиодарон (Кордарон)", sub: "Антиаритмиялық препарат", text: "<p>Қолдану көрсеткіштері және енгізу жылдамдығы.</p>" }
         ]
       },
       ref: {
-        name: "Анықтамалық бөлім", short: "Анықтама", icon: "📖", color: "var(--ref)",
-        note: "Мекенжайлар мен пайдалы телефон нөмірлері.",
+        name: "Анықтамалық", short: "Анықтамалық", icon: "📖", color: "var(--ref)",
+        note: "Аға дәрігерлер байланысы, МКБ-10 кодтары және стационарлар.",
         items: [
-          { icon: "📞", title: "Старший дәрігер байланыстары", sub: "Үнемі қолжетімді нөмірлер", text: "<p>Орталық: +7 (727) 338-03-03. Қосалқы станция: +7 (727) 279-00-11.</p>" }
+          { icon: "👨‍⚕️", title: "Аға дәрігерлер байланысы", sub: "Орталық және қосалқы станциялар", text: "<p>Кеңес алу телефондары мен ішкі нөмірлер.</p>" },
+          { icon: "🏥", title: "Алматы стационарлары", sub: "Мекенжайлары мен бейіндері", text: "<p>Қалалық клиникалық ауруханалар тізімі.</p>" }
         ]
       }
     }
   },
+
   ru: {
     btn: "ҚАЗ",
-    title: "Скорая помощь Алматы",
-    subtitle: "Помощник фельдшера п/с №10",
+    title: "Qolday 103",
+    subtitle: "Помощник фельдшера",
+    disclaimer: "Инструмент носит исключительно справочно-информационный характер и не является официальным медицинским изделием или программным обеспечением ССМП. Все клинические решения и расчеты дозировок медицинский работник обязан сверять с актуальными клиническими протоколами МЗ РК и инструкциями к препаратам",
     homeNav: "Главная",
-    homeTitle: "Какая помощь нужна?",
+    homeTitle: "Чем вам помочь?",
     back: "← На главную",
-    count: "записи",
+    count: "записей",
     search: "Поиск...",
+    copy: "📋 Скопировать текст",
+    copied: "Скопировано!",
     empty: "Ничего не найдено.",
     noText: "Описание пока не добавлено.",
     close: "Закрыть",
@@ -335,66 +381,79 @@ const DB = {
     sections: {
       safety: {
         name: "Коды безопасности", short: "Коды", icon: "🛡️", color: "var(--warn)",
-        note: "Алгоритмы действий бригады при ЧС.",
+        note: "Алгоритмы действий бригады при чрезвычайных ситуациях.",
         items: [
-          { icon: "🔴", title: "Красный код", sub: "Пожарная безопасность", text: "<p>Алгоритм действий бригады при пожаре.</p>" },
-          { icon: "🔵", title: "Синий код", sub: "Сердечно-лёгочная реанимация", text: "<p>Действия при остановке сердца.</p>" },
-          { icon: "🟡", title: "Жёлтый код", sub: "Агрессивный пациент", text: "<p>Защита бригады и вызов полиции.</p>" }
+          { icon: "🔴", title: "Код Красный", sub: "Пожарная безопасность", text: "<p>Алгоритм действий бригады при возгорании на подстанции или на вызове.</p>" },
+          { icon: "🔵", title: "Код Синий", sub: "Сердечно-лёгочная реанимация", text: "<p>Экстренные действия при остановке кровообращения.</p>" },
+          { icon: "🟡", title: "Код Жёлтый", sub: "Агрессивный пациент", text: "<p>Правила личной безопасности бригады и порядок вызова полиции.</p>" }
         ]
       },
       narcotics: {
-        name: "Наркотические средства", short: "Наркотики", icon: "⚠️", color: "var(--danger)",
-        note: "Сверяйтесь с приказами и протоколами МЗ РК.",
+        name: "Наркотические и психотропные препараты", short: "Наркотические", icon: "⚠️", color: "var(--danger)",
+        note: "Справочная информация. Сверяйтесь с действующими приказами и клиническими протоколами МЗ РК.",
         items: [
           {
             icon: "💉",
-            title: "Морфина гидрохлорид 1% - 1.0 мл",
+            title: "Морфина гидрохлорид 1% - 1,0 мл",
             sub: "Наркотический анальгетик (10 мг/мл)",
             text: `
-              <h3>Показания</h3>
+              <h3>Показания к применению</h3>
               <ul>
-                <li>Острый коронарный синдром (ОКС), инфаркт;</li>
-                <li>Отек легких (сердечная астма);</li>
-                <li>Выраженный болевой синдром при тяжелых травмах.</li>
+                <li>Острый коронарный синдром (ОКС), инфаркт миокарда;</li>
+                <li>Отёк лёгких (сердечная астма);</li>
+                <li>Выраженный болевой синдром при тяжелых травмах и ожогах.</li>
               </ul>
+
               <div class="scheme">
-                <b>Разведение:</b>
-                1 мл 1% раствора развести в <b>9 мл 0,9% NaCl</b> (в 1 мл = 1 мг).
+                <b>Схема разведения и дозировки:</b>
+                1 мл 1% раствора (10 мг) развести в <b>9 мл 0,9% NaCl</b> (получается 1 мг морфина в 1 мл).<br>
+                Вводить внутривенно (в/в) медленно дробно по 2–5 мг каждые 5–15 минут до купирования болевого синдрома.
               </div>
+
               <div class="scheme alert">
                 <b>Противопоказания:</b>
-                Угнетение дыхания, ЧМТ, кома, детский возраст до 2 лет.
+                Угнетение дыхательного центра, ЧМТ, кома, неясный «острый живот», детский возраст до 2 лет.
               </div>
+
+              <h3>Правила учёта и списания</h3>
+              <p>Использованная ампула подлежит обязательной сдаче старшему фельдшеру с записью в журнале учёта НС и ПВ.</p>
+              <img src="morphine_scheme.png" alt="Схема применения Морфина" onerror="this.style.display='none'">
             `
-          }
+          },
+          { icon: "💉", title: "Фентанил 0,005% - 2,0 мл", sub: "Наркотический анальгетик", text: "<p>Дозировки, особенности введения и порядок списания.</p>" },
+          { icon: "💉", title: "Диазепам 0,5% - 2,0 мл", sub: "Психотропный препарат", text: "<p>Применение при судорожном синдроме и правила учёта.</p>" }
         ]
       },
       briefing: {
         name: "Планёрка", short: "Планёрка", icon: "📢", color: "var(--accent)",
-        note: "Важная информация с пятиминуток.",
+        note: "Актуальная информация со сменных планёрок, приказы и объявления.",
         items: [
-          { icon: "📌", title: "Изменения на смене", sub: "Актуальные объявления", text: "<p>Важные требования и нововведения руководства.</p>" }
+          { icon: "📌", title: "Изменения в работе смены", sub: "Актуальные требования", text: "<p>Здесь размещаются ключевые замечания, новые приказы и инструкции с планёрки.</p>" },
+          { icon: "🚑", title: "График госпитализации", sub: "Дежурные стационары", text: "<p>Порядок и дни дежурств профильных стационаров г. Алматы.</p>" }
         ]
       },
       cards: {
-        name: "Карты вызова", short: "Карты", icon: "📋", color: "var(--doc)",
-        note: "Шаблоны описания вызовов (ф. 110/у).",
+        name: "Карты вызова", short: "Карты вызова", icon: "📋", color: "var(--doc)",
+        note: "Образцы оформления карты вызова скорой медицинской помощи (ф. 110/у).",
         items: [
-          { icon: "📄", title: "Острый коронарный синдром (ОКС)", sub: "Жалобы, статус, терапия", text: "<p>Жалобы: Давящая, сжимающая боль за грудиной, иррадиирует в левую руку, лопатку. Объективно: Беспокоен, холодный пот. ЭКГ: Подъем сегмента ST. Помощь: Аспирин 300 мг, Клопидогрель 300-600 мг, Гепарин 5000 ЕД в/в, Морфин 2-5 мг в/в.</p>" }
+          { icon: "📄", title: "Острый коронарный синдром (ОКС)", sub: "Образец описания", text: "<p>Жалобы, анамнез, объективный статус, описание ЭКГ и объём помощи.</p>" },
+          { icon: "📄", title: "Артериальная гипертензия (Криз)", sub: "Образец описания", text: "<p>Цифры АД, неврологический статус, проведённая терапия.</p>" }
         ]
       },
       meds: {
-        name: "Лекарственные средства", short: "Лекарства", icon: "💊", color: "var(--success)",
-        note: "Основные дозировки и стандарты.",
+        name: "Лекарственные препараты", short: "Лекарства", icon: "💊", color: "var(--success)",
+        note: "Справочная информация. Дозы и показания сверяйте с протоколами.",
         items: [
-          { icon: "💊", title: "Адреналин (Эпинефрин)", sub: "При анафилаксии и СЛР", text: "<p>Анафилаксия: в/м 0,3-0.5 мл 0,1% раствора. СЛР: 1 мл в/в каждые 3-5 минут.</p>" }
+          { icon: "💊", title: "Адреналин (Эпинефрин)", sub: "Адреномиметик", text: "<p>Дозировки и пути введения при анафилактическом шоке и СЛР.</p>" },
+          { icon: "💊", title: "Амиодарон (Кордарон)", sub: "Антиаритмический препарат", text: "<p>Показания, разведение и скорость введения.</p>" }
         ]
       },
       ref: {
         name: "Справочник", short: "Справочник", icon: "📖", color: "var(--ref)",
-        note: "Контакты и адреса.",
+        note: "Контакты старших врачей, коды МКБ-10 и адреса стационаров.",
         items: [
-          { icon: "📞", title: "Контакты старших врачей", sub: "Для консультаций", text: "<p>Центр: +7 (727) 338-03-03. Подстанция: +7 (727) 279-00-11.</p>" }
+          { icon: "👨‍⚕️", title: "Контакты старших врачей", sub: "Центр и подстанции", text: "<p>Телефоны для консультаций и оперативной связи.</p>" },
+          { icon: "🏥", title: "Стационары г. Алматы", sub: "Адреса и профили", text: "<p>Список городских клинических больниц и приёмных покоев.</p>" }
         ]
       }
     }
@@ -414,11 +473,13 @@ const ico = s => /\.(png|jpe?g|svg|webp|gif)$/i.test(s || "") ? `<img src="${esc
 const stripTags = s => String(s || "").replace(/<[^>]*>/g, " ");
 
 let lang = "kk", cur = "home", q = "", openIdx = null;
+$("#logo").src = LOGO;
 
-// Настройка нативной BackButton Telegram
 if (tg && tg.BackButton) {
   tg.BackButton.onClick(() => {
-    if (!$("#sheet").hidden) {
+    if (!$("#imgModal").hidden) {
+      $("#imgModal").hidden = true;
+    } else if (!$("#sheet").hidden) {
       $("#sheet").hidden = true;
       openIdx = null;
       toggleTelegramBackButton();
@@ -471,7 +532,9 @@ function render() {
   const v = $("#view");
 
   if (cur === "home") {
-    v.innerHTML = `<h2>${esc(d.homeTitle)}</h2><div class="tiles">` +
+    v.innerHTML =
+      `<div class="disclaimer"><span class="disclaimer-ic">⚠️</span><span>${esc(d.disclaimer)}</span></div>` +
+      `<h2>${esc(d.homeTitle)}</h2><div class="tiles">` +
       d.homeKeys.map(k => {
         const s = d.sections[k];
         return `<button class="tile" data-k="${k}" style="--c:${s.color}"><i>${ico(s.icon)}</i><b>${esc(s.name)}</b><small>${s.items.length} ${esc(d.count)}</small></button>`;
@@ -502,16 +565,18 @@ function openItem(i) {
   const it = d.sections[cur].items[i];
   $("#shd").innerHTML = `<span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span>`;
   $("#stx").innerHTML = it.text || `<p>${esc(d.noText)}</p>`;
-  
-  // Кнопка копирования
-  $("#cpBtn").hidden = !it.text;
-  $("#cpBtn").onclick = () => {
+
+  const cpBtn = $("#cpBtn");
+  cpBtn.hidden = !it.text;
+  cpBtn.textContent = d.copy;
+  cpBtn.onclick = () => {
     const rawText = stripTags(it.text).replace(/\s+/g, ' ').trim();
     navigator.clipboard.writeText(rawText);
-    if (tg) {
-      tg.showPopup({ message: lang === "kk" ? "Көшірілді!" : "Скопировано!" });
+    if (tg && tg.showPopup) {
+      tg.showPopup({ message: d.copied });
     } else {
-      alert(lang === "kk" ? "Көшірілді!" : "Скопировано!");
+      cpBtn.textContent = "✓ " + d.copied;
+      setTimeout(() => { cpBtn.textContent = d.copy; }, 1500);
     }
   };
 
@@ -533,19 +598,19 @@ document.addEventListener("click", e => {
   }
   const t = e.target.closest("[data-k],[data-i],[data-close]");
   if (!t) return;
-  if (t.dataset.close !== undefined) { 
-    $("#sheet").hidden = true; 
-    openIdx = null; 
+  if (t.dataset.close !== undefined) {
+    $("#sheet").hidden = true;
+    openIdx = null;
     toggleTelegramBackButton();
-    return; 
+    return;
   }
-  if (t.dataset.k) { 
-    cur = t.dataset.k; 
-    q = ""; 
-    $("#search").value = ""; 
-    render(); 
-    window.scrollTo(0, 0); 
-    return; 
+  if (t.dataset.k) {
+    cur = t.dataset.k;
+    q = "";
+    $("#search").value = "";
+    render();
+    window.scrollTo(0, 0);
+    return;
   }
   if (t.dataset.i) openItem(+t.dataset.i);
 });

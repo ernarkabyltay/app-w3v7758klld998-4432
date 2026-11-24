@@ -67,16 +67,23 @@ header {
 
 #search-container { position: relative; margin-top: 12px; }
 #search {
-  width: 100%; padding: 10px 14px 10px 38px; border-radius: 12px; border: 0;
+  width: 100%; padding: 10px 36px 10px 38px; border-radius: 12px; border: 0;
   font: inherit; background: rgba(255,255,255,0.14); color: #fff;
   transition: background 0.2s ease;
 }
 #search::placeholder { color: rgba(255,255,255,0.7); }
-#search:focus { background: rgba(255,255,255,0.2); outline: none; }
+#search:focus { background: rgba(255,255,255,0.22); outline: none; }
 .search-icon {
   position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
   font-size: 15px; opacity: 0.75; pointer-events: none;
 }
+.search-clear {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,0.2); color: #fff; font-size: 13px;
+}
+.search-clear[hidden] { display: none; }
 
 main { padding: 16px; max-width: 640px; margin: 0 auto; }
 h2 { margin: 0 0 14px; font-size: 20px; font-weight: 700; }
@@ -92,9 +99,7 @@ h2 { margin: 0 0 14px; font-size: 20px; font-weight: 700; }
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   font-size: 12.5px; line-height: 1.45; color: var(--ink);
 }
-.disclaimer-ic {
-  font-size: 20px; line-height: 1.1; flex: none; margin-top: 1px;
-}
+.disclaimer-ic { font-size: 20px; line-height: 1.1; flex: none; margin-top: 1px; }
 [data-theme=dark] .disclaimer {
   background: rgba(245, 158, 11, 0.08);
   border-color: rgba(245, 158, 11, 0.45);
@@ -138,6 +143,11 @@ h2 { margin: 0 0 14px; font-size: 20px; font-weight: 700; }
 .ic img { width: 100%; height: 100%; object-fit: cover; }
 .row b { display: block; font-size: 15px; color: var(--ink); line-height: 1.3; }
 .row small { color: var(--mute); font-size: 12.5px; margin-top: 2px; display: block; }
+.badge-sec {
+  display: inline-block; margin-top: 5px; padding: 2px 8px; border-radius: 6px;
+  background: var(--bg); color: var(--mute); font-size: 11px; font-weight: 600;
+  border: 1px solid var(--line);
+}
 
 .note {
   margin: 0 0 16px; padding: 12px 14px; border-radius: 12px;
@@ -202,6 +212,38 @@ nav button span img { width: 20px; height: 20px; object-fit: contain; }
 .scheme b { display: block; margin-bottom: 4px; font-size: 14.5px; color: var(--ink); }
 .scheme.alert { border-left-color: var(--danger); background: rgba(239, 68, 68, 0.05); }
 
+/* Встроенный калькулятор дозировок */
+.calc-box {
+  margin: 0 0 16px; padding: 14px; border-radius: 14px;
+  background: var(--bg); border: 1.5px solid var(--accent);
+}
+.calc-box label {
+  display: block; font-size: 12.5px; font-weight: 700;
+  color: var(--head); margin-bottom: 8px; text-transform: uppercase;
+}
+[data-theme=dark] .calc-box label { color: var(--accent); }
+.calc-row { display: flex; align-items: center; gap: 10px; }
+.calc-row input {
+  width: 110px; padding: 10px 12px; border-radius: 10px;
+  border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+  font: 700 16px/1.2 system-ui, sans-serif;
+}
+.calc-row input:focus { border-color: var(--accent); outline: none; }
+.calc-res { flex: 1; font-size: 13.5px; line-height: 1.35; }
+.calc-res strong { display: block; font-size: 16px; color: var(--head); }
+[data-theme=dark] .calc-res strong { color: var(--accent); }
+
+/* Кнопки быстрого звонка и копирования */
+.tel-link {
+  display: inline-flex; align-items: center; gap: 8px; margin: 4px 0;
+  padding: 9px 14px; border-radius: 10px;
+  background: rgba(16, 185, 129, 0.12); color: #065f46;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  font-weight: 700; font-size: 14px; text-decoration: none;
+}
+[data-theme=dark] .tel-link { color: #6ee7b7; }
+.tel-link:active { opacity: 0.8; }
+
 .copy-btn {
   display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px;
   padding: 8px 14px; border-radius: 10px; background: var(--bg);
@@ -235,9 +277,10 @@ nav button span img { width: 20px; height: 20px; object-fit: contain; }
     </div>
     <button class="lang" id="langBtn" type="button">РУС</button>
   </div>
-  <div id="search-container" hidden>
+  <div id="search-container">
     <span class="search-icon">🔍</span>
-    <input id="search" type="search" placeholder="Іздеу">
+    <input id="search" type="search" placeholder="Іздеу...">
+    <button class="search-clear" id="clrSearch" type="button" hidden aria-label="Очистить">✕</button>
   </div>
 </header>
 
@@ -248,6 +291,7 @@ nav button span img { width: 20px; height: 20px; object-fit: contain; }
   <div class="bd" data-close></div>
   <div class="pn">
     <div class="hd" id="shd"></div>
+    <div id="scalc"></div>
     <button class="copy-btn" id="cpBtn" hidden></button>
     <div class="tx" id="stx"></div>
     <button class="close" id="clsBtn" data-close>Жабу</button>
@@ -270,14 +314,18 @@ const DB = {
     disclaimer: "Бұл құрал тек анықтамалық-ақпараттық сипатқа ие және ресми медициналық бұйым немесе ЖМЖС бағдарламалық қамтамасыз етуі болып табылмайды. Медицина қызметкері барлық клиникалық шешімдер мен дозалау есептеулерін ҚР ДСМ өзекті клиникалық хаттамаларымен және препарат нұсқаулықтарымен міндетті түрде салыстыруы тиіс.",
     homeNav: "Басты бет",
     homeTitle: "Сізге қандай көмек қажет?",
+    searchTitle: "Іздеу нәтижелері",
     back: "← Басты бетке",
     count: "жазба",
-    search: "Іздеу...",
+    search: "Барлық бөлімдерден іздеу...",
     copy: "📋 Мәтінді көшіру",
     copied: "Көшірілді!",
     empty: "Ештеңе табылмады.",
     noText: "Сипаттама әлі қосылмаған.",
     close: "Жабу",
+    calcTitle: "🧮 Салмақ бойынша дозаны есептеу",
+    calcPlaceholder: "Салмақ (кг)",
+    calcHint: "Пациент салмағын енгізіңіз",
     homeKeys: ["safety", "narcotics", "briefing"],
     navKeys: ["cards", "meds", "ref"],
     sections: {
@@ -298,6 +346,13 @@ const DB = {
             icon: "💉",
             title: "Морфин гидрохлориді 1% - 1,0 мл",
             sub: "Есірткілік анальгетик (10 мг/мл)",
+            calc: {
+              rate: 0.1, // 0.1 мг/кг (1:9 сұйылтқанда 1 мл = 1 мг)
+              maxMg: 10,
+              unit: "мг",
+              mlPerMg: 1,
+              note: "1:9 сұйылтылған ерітіндіден (1 мл = 1 мг)"
+            },
             text: `
               <h3>Көрсеткіштері</h3>
               <ul>
@@ -318,7 +373,7 @@ const DB = {
               </div>
 
               <h3>Есепке алу және сұлбасы</h3>
-              <p>Қолданылған ампула міндетті түрде аға фельдшерге тапсырылып, арнайы журналға тіркеледі.</p>
+              <p>Қолданылған ампула міндетті түрде аға фельдшерге тапсырылып, арнайы журналға тіркеді.</p>
               <img src="morphine_scheme.png" alt="Морфин сұлбасы" onerror="this.style.display='none'">
             `
           },
@@ -346,7 +401,19 @@ const DB = {
         name: "Дәрілік препараттар", short: "Дәрілер", icon: "💊", color: "var(--success)",
         note: "Анықтамалық ақпарат. Дозалар мен көрсеткіштерді хаттамалармен салыстырыңыз.",
         items: [
-          { icon: "💊", title: "Адреналин (Эпинефрин)", sub: "Адреномиметик", text: "<p>Анафилаксиялық шок және ЖӨР кезіндегі дозалары.</p>" },
+          {
+            icon: "💊",
+            title: "Адреналин (Эпинефрин) 0,1% - 1,0 мл",
+            sub: "Адреномиметик (1 мг/мл)",
+            calc: {
+              rate: 0.01, // 0.01 мг/кг анафилаксия / балалар ЖӨР
+              maxMg: 0.5,
+              unit: "мг",
+              mlPerMg: 1,
+              note: "Анафилаксия кезінде б/і (макс. 0,5 мл)"
+            },
+            text: "<p>Анафилаксиялық шок кезінде: 0,01 мг/кг (ең көбі 0,5 мл) санның алдыңғы-бүйір бетіне бұлшықет ішіне. ЖӨР кезінде: 1 мг к/і әр 3–5 минут сайын.</p>"
+          },
           { icon: "💊", title: "Амиодарон (Кордарон)", sub: "Антиаритмиялық препарат", text: "<p>Қолдану көрсеткіштері және енгізу жылдамдығы.</p>" }
         ]
       },
@@ -354,7 +421,16 @@ const DB = {
         name: "Анықтамалық", short: "Анықтамалық", icon: "📖", color: "var(--ref)",
         note: "Аға дәрігерлер байланысы, МКБ-10 кодтары және стационарлар.",
         items: [
-          { icon: "👨‍⚕️", title: "Аға дәрігерлер байланысы", sub: "Орталық және қосалқы станциялар", text: "<p>Кеңес алу телефондары мен ішкі нөмірлер.</p>" },
+          {
+            icon: "👨‍⚕️",
+            title: "Аға дәрігерлер байланысы",
+            sub: "Орталық және қосалқы станциялар",
+            text: `
+              <p>Кеңес алу және шұғыл байланыс нөмірлері:</p>
+              <p><a class="tel-link" href="tel:+77273380303">📞 Орталық аға дәрігер: +7 (727) 338-03-03</a></p>
+              <p><a class="tel-link" href="tel:+77272790011">📞 №10 қ/с диспетчерлік: +7 (727) 279-00-11</a></p>
+            `
+          },
           { icon: "🏥", title: "Алматы стационарлары", sub: "Мекенжайлары мен бейіндері", text: "<p>Қалалық клиникалық ауруханалар тізімі.</p>" }
         ]
       }
@@ -368,14 +444,18 @@ const DB = {
     disclaimer: "Инструмент носит исключительно справочно-информационный характер и не является официальным медицинским изделием или программным обеспечением ССМП. Все клинические решения и расчеты дозировок медицинский работник обязан сверять с актуальными клиническими протоколами МЗ РК и инструкциями к препаратам",
     homeNav: "Главная",
     homeTitle: "Чем вам помочь?",
+    searchTitle: "Результаты поиска",
     back: "← На главную",
     count: "записей",
-    search: "Поиск...",
+    search: "Поиск по всем разделам...",
     copy: "📋 Скопировать текст",
     copied: "Скопировано!",
     empty: "Ничего не найдено.",
     noText: "Описание пока не добавлено.",
     close: "Закрыть",
+    calcTitle: "🧮 Расчёт дозы по весу пациента",
+    calcPlaceholder: "Вес (кг)",
+    calcHint: "Введите вес пациента в кг",
     homeKeys: ["safety", "narcotics", "briefing"],
     navKeys: ["cards", "meds", "ref"],
     sections: {
@@ -396,6 +476,13 @@ const DB = {
             icon: "💉",
             title: "Морфина гидрохлорид 1% - 1,0 мл",
             sub: "Наркотический анальгетик (10 мг/мл)",
+            calc: {
+              rate: 0.1,
+              maxMg: 10,
+              unit: "мг",
+              mlPerMg: 1,
+              note: "из разведённого раствора 1:9 (1 мл = 1 мг)"
+            },
             text: `
               <h3>Показания к применению</h3>
               <ul>
@@ -444,7 +531,19 @@ const DB = {
         name: "Лекарственные препараты", short: "Лекарства", icon: "💊", color: "var(--success)",
         note: "Справочная информация. Дозы и показания сверяйте с протоколами.",
         items: [
-          { icon: "💊", title: "Адреналин (Эпинефрин)", sub: "Адреномиметик", text: "<p>Дозировки и пути введения при анафилактическом шоке и СЛР.</p>" },
+          {
+            icon: "💊",
+            title: "Адреналин (Эпинефрин) 0,1% - 1,0 мл",
+            sub: "Адреномиметик (1 мг/мл)",
+            calc: {
+              rate: 0.01,
+              maxMg: 0.5,
+              unit: "мг",
+              mlPerMg: 1,
+              note: "в/м при анафилаксии (макс. 0,5 мл)"
+            },
+            text: "<p>При анафилактическом шоке: 0,01 мг/кг (макс. 0,5 мл) в/м в переднебоковую поверхность бедра. При СЛР: 1 мг в/в каждые 3–5 минут.</p>"
+          },
           { icon: "💊", title: "Амиодарон (Кордарон)", sub: "Антиаритмический препарат", text: "<p>Показания, разведение и скорость введения.</p>" }
         ]
       },
@@ -452,7 +551,16 @@ const DB = {
         name: "Справочник", short: "Справочник", icon: "📖", color: "var(--ref)",
         note: "Контакты старших врачей, коды МКБ-10 и адреса стационаров.",
         items: [
-          { icon: "👨‍⚕️", title: "Контакты старших врачей", sub: "Центр и подстанции", text: "<p>Телефоны для консультаций и оперативной связи.</p>" },
+          {
+            icon: "👨‍⚕️",
+            title: "Контакты старших врачей",
+            sub: "Центр и подстанции",
+            text: `
+              <p>Телефоны для консультаций и оперативной связи:</p>
+              <p><a class="tel-link" href="tel:+77273380303">📞 Старший врач центра: +7 (727) 338-03-03</a></p>
+              <p><a class="tel-link" href="tel:+77272790011">📞 Диспетчерская п/с №10: +7 (727) 279-00-11</a></p>
+            `
+          },
           { icon: "🏥", title: "Стационары г. Алматы", sub: "Адреса и профили", text: "<p>Список городских клинических больниц и приёмных покоев.</p>" }
         ]
       }
@@ -467,33 +575,43 @@ if (tg) {
   document.documentElement.dataset.theme = tg.colorScheme;
 }
 
+const haptic = (type = "light") => {
+  try { tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred(type); } catch (e) {}
+};
+
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ico = s => /\.(png|jpe?g|svg|webp|gif)$/i.test(s || "") ? `<img src="${esc(s)}" alt="">` : esc(s);
 const stripTags = s => String(s || "").replace(/<[^>]*>/g, " ");
 
-let lang = "kk", cur = "home", q = "", openIdx = null;
+let lang = "kk", cur = "home", q = "", openRef = null;
 $("#logo").src = LOGO;
 
+// Нативная кнопка Telegram "Назад"
 if (tg && tg.BackButton) {
   tg.BackButton.onClick(() => {
     if (!$("#imgModal").hidden) {
       $("#imgModal").hidden = true;
     } else if (!$("#sheet").hidden) {
       $("#sheet").hidden = true;
-      openIdx = null;
-      toggleTelegramBackButton();
-    } else if (cur !== "home") {
-      cur = "home"; q = ""; $("#search").value = "";
+      openRef = null;
+    } else if (cur === "home" && q.trim()) {
+      q = "";
+      $("#search").value = "";
       render();
-      toggleTelegramBackButton();
+    } else if (cur !== "home") {
+      cur = "home";
+      q = "";
+      $("#search").value = "";
+      render();
     }
+    toggleTelegramBackButton();
   });
 }
 
 function toggleTelegramBackButton() {
   if (tg && tg.BackButton) {
-    if (cur !== "home" || !$("#sheet").hidden) {
+    if (cur !== "home" || !$("#sheet").hidden || q.trim().length > 0) {
       tg.BackButton.show();
     } else {
       tg.BackButton.hide();
@@ -519,19 +637,50 @@ function initLang() {
     }).join("");
 
   render();
-  if (!$("#sheet").hidden && openIdx !== null && cur !== "home") openItem(openIdx);
+  if (!$("#sheet").hidden && openRef) openItem(openRef.sec, openRef.idx);
 }
 
 function render() {
   const d = DB[lang];
   const isHomeSub = d.homeKeys.indexOf(cur) !== -1;
   const navActive = isHomeSub ? "home" : cur;
+  const t = q.trim().toLowerCase();
 
+  $("#clrSearch").hidden = !t;
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.k === navActive));
-  $("#search-container").hidden = cur === "home";
   const v = $("#view");
 
+  // Главный экран
   if (cur === "home") {
+    // Глобальный поиск по всем 6 разделам прямо с главной
+    if (t) {
+      const allKeys = [...d.homeKeys, ...d.navKeys];
+      const results = [];
+      allKeys.forEach(secKey => {
+        const s = d.sections[secKey];
+        s.items.forEach((it, idx) => {
+          if ([it.title, it.sub, stripTags(it.text)].join(" ").toLowerCase().includes(t)) {
+            results.push({ secKey, s, it, idx });
+          }
+        });
+      });
+
+      v.innerHTML =
+        `<h2>${esc(d.searchTitle)} (${results.length})</h2>` +
+        (results.length ? results.map(({ secKey, s, it, idx }) =>
+          `<button class="row" data-sec="${secKey}" data-i="${idx}" style="--c:${s.color}">
+            <span class="ic">${ico(it.icon)}</span>
+            <span>
+              <b>${esc(it.title)}</b>
+              <small>${esc(it.sub)}</small>
+              <span class="badge-sec">${esc(s.name)}</span>
+            </span>
+          </button>`).join("")
+          : `<div class="empty">${esc(d.empty)}</div>`);
+      toggleTelegramBackButton();
+      return;
+    }
+
     v.innerHTML =
       `<div class="disclaimer"><span class="disclaimer-ic">⚠️</span><span>${esc(d.disclaimer)}</span></div>` +
       `<h2>${esc(d.homeTitle)}</h2><div class="tiles">` +
@@ -544,7 +693,8 @@ function render() {
     return;
   }
 
-  const s = d.sections[cur], t = q.trim().toLowerCase();
+  // Внутренний раздел
+  const s = d.sections[cur];
   const rows = s.items.map((it, i) => ({ it, i })).filter(({ it }) =>
     !t || [it.title, it.sub, stripTags(it.text)].join(" ").toLowerCase().includes(t));
 
@@ -553,23 +703,54 @@ function render() {
     `<h2>${esc(s.name)}</h2>` +
     (s.note ? `<div class="note">${esc(s.note)}</div>` : "") +
     (rows.length ? rows.map(({ it, i }) =>
-      `<button class="row" data-i="${i}" style="--c:${s.color}"><span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span></button>`).join("")
+      `<button class="row" data-sec="${cur}" data-i="${i}" style="--c:${s.color}"><span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span></button>`).join("")
       : `<div class="empty">${esc(d.empty)}</div>`);
 
   toggleTelegramBackButton();
 }
 
-function openItem(i) {
-  openIdx = i;
+function openItem(secKey, i) {
+  openRef = { sec: secKey, idx: i };
   const d = DB[lang];
-  const it = d.sections[cur].items[i];
+  const it = d.sections[secKey].items[i];
   $("#shd").innerHTML = `<span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span>`;
+
+  // Рендер встроенного калькулятора, если он задан для препарата
+  const calcBox = $("#scalc");
+  if (it.calc) {
+    calcBox.innerHTML = `
+      <div class="calc-box">
+        <label>${esc(d.calcTitle)}</label>
+        <div class="calc-row">
+          <input id="wInput" type="number" inputmode="decimal" min="1" max="300" placeholder="${esc(d.calcPlaceholder)}">
+          <div class="calc-res" id="wRes">${esc(d.calcHint)}</div>
+        </div>
+      </div>
+    `;
+    const wInput = $("#wInput");
+    const wRes = $("#wRes");
+    wInput.addEventListener("input", () => {
+      const w = parseFloat(wInput.value);
+      if (!w || w <= 0) {
+        wRes.innerHTML = esc(d.calcHint);
+        return;
+      }
+      let doseMg = w * it.calc.rate;
+      if (it.calc.maxMg && doseMg > it.calc.maxMg) doseMg = it.calc.maxMg;
+      const doseMl = doseMg * it.calc.mlPerMg;
+      wRes.innerHTML = `<strong>${doseMg.toFixed(2)} ${esc(it.calc.unit)} (${doseMl.toFixed(2)} мл)</strong>${esc(it.calc.note)}`;
+    });
+  } else {
+    calcBox.innerHTML = "";
+  }
+
   $("#stx").innerHTML = it.text || `<p>${esc(d.noText)}</p>`;
 
   const cpBtn = $("#cpBtn");
   cpBtn.hidden = !it.text;
   cpBtn.textContent = d.copy;
   cpBtn.onclick = () => {
+    haptic("medium");
     const rawText = stripTags(it.text).replace(/\s+/g, ' ').trim();
     navigator.clipboard.writeText(rawText);
     if (tg && tg.showPopup) {
@@ -586,25 +767,35 @@ function openItem(i) {
 }
 
 $("#langBtn").addEventListener("click", () => {
+  haptic("light");
   lang = lang === "kk" ? "ru" : "kk";
   initLang();
+});
+
+$("#clrSearch").addEventListener("click", () => {
+  q = "";
+  $("#search").value = "";
+  $("#search").focus();
+  render();
 });
 
 document.addEventListener("click", e => {
   if (e.target.matches("#stx img")) {
     $("#fullImg").src = e.target.src;
     $("#imgModal").hidden = false;
+    toggleTelegramBackButton();
     return;
   }
   const t = e.target.closest("[data-k],[data-i],[data-close]");
   if (!t) return;
   if (t.dataset.close !== undefined) {
     $("#sheet").hidden = true;
-    openIdx = null;
+    openRef = null;
     toggleTelegramBackButton();
     return;
   }
   if (t.dataset.k) {
+    haptic("light");
     cur = t.dataset.k;
     q = "";
     $("#search").value = "";
@@ -612,12 +803,38 @@ document.addEventListener("click", e => {
     window.scrollTo(0, 0);
     return;
   }
-  if (t.dataset.i) openItem(+t.dataset.i);
+  if (t.dataset.i !== undefined) {
+    haptic("light");
+    openItem(t.dataset.sec || cur, +t.dataset.i);
+  }
 });
 
-$("#closeImgBtn").addEventListener("click", () => { $("#imgModal").hidden = true; });
-$("#imgModal").addEventListener("click", e => { if (e.target.id === "imgModal") $("#imgModal").hidden = true; });
+$("#closeImgBtn").addEventListener("click", () => { $("#imgModal").hidden = true; toggleTelegramBackButton(); });
+$("#imgModal").addEventListener("click", e => { if (e.target.id === "imgModal") { $("#imgModal").hidden = true; toggleTelegramBackButton(); } });
 $("#search").addEventListener("input", e => { q = e.target.value; render(); });
+
+// Офлайн-кэш страницы для работы без интернета (в лифтах, подвалах, за городом)
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  const swCode = `
+    const CACHE = "qolday-103-v1";
+    self.addEventListener("install", e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./", "logo.png"]).catch(() => {})));
+      self.skipWaiting();
+    });
+    self.addEventListener("fetch", e => {
+      if (e.request.method !== "GET") return;
+      e.respondWith(
+        fetch(e.request).then(res => {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, copy));
+          return res;
+        }).catch(() => caches.match(e.request))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: "application/javascript" });
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+}
 
 initLang();
 </script>

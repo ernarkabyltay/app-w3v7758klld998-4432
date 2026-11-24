@@ -215,6 +215,32 @@ nav button span img { width: 20px; height: 20px; object-fit: contain; }
 .scheme b { display: block; margin-bottom: 4px; font-size: 14.5px; color: var(--ink); }
 .scheme.alert { border-left-color: var(--danger); background: rgba(239, 68, 68, 0.05); }
 
+/* Оформление списка старших врачей */
+.doc-banner {
+  margin: 0 0 14px; padding: 12px 14px; border-radius: 12px;
+  background: linear-gradient(135deg, rgba(168, 28, 28, 0.08), rgba(245, 158, 11, 0.12));
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-left: 4px solid var(--head);
+  font-weight: 700; font-size: 14px; line-height: 1.35; color: var(--ink);
+}
+.doc-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.doc-list li {
+  display: flex; align-items: center; gap: 12px;
+  margin: 0; padding: 10px 12px; border-radius: 12px;
+  background: var(--bg); border: 1px solid var(--line);
+  font-size: 14.5px; font-weight: 600; color: var(--ink);
+}
+.doc-num {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--head); color: #fff;
+  border: 1.5px solid var(--accent);
+  display: grid; place-items: center;
+  font-size: 12px; font-weight: 800; flex: none;
+}
+
 /* Встроенный калькулятор дозировок */
 .calc-box {
   margin: 0 0 16px; padding: 14px; border-radius: 14px;
@@ -235,24 +261,6 @@ nav button span img { width: 20px; height: 20px; object-fit: contain; }
 .calc-res { flex: 1; font-size: 13.5px; line-height: 1.35; }
 .calc-res strong { display: block; font-size: 16px; color: var(--head); }
 [data-theme=dark] .calc-res strong { color: var(--accent); }
-
-/* Кнопки быстрого звонка и копирования */
-.tel-link {
-  display: inline-flex; align-items: center; gap: 8px; margin: 4px 0;
-  padding: 9px 14px; border-radius: 10px;
-  background: rgba(16, 185, 129, 0.12); color: #065f46;
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  font-weight: 700; font-size: 14px; text-decoration: none;
-}
-[data-theme=dark] .tel-link { color: #6ee7b7; }
-.tel-link:active { opacity: 0.8; }
-
-.copy-btn {
-  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px;
-  padding: 8px 14px; border-radius: 10px; background: var(--bg);
-  border: 1px solid var(--line); font-size: 13px; font-weight: 600; color: var(--ink);
-}
-.copy-btn:active { background: var(--line); }
 
 .tx img { display: block; width: 100%; max-height: 300px; object-fit: contain; border-radius: 12px; margin: 14px 0; background: var(--bg); border: 1.5px solid var(--line); cursor: zoom-in; }
 
@@ -295,7 +303,6 @@ nav button span img { width: 20px; height: 20px; object-fit: contain; }
   <div class="pn">
     <div class="hd" id="shd"></div>
     <div id="scalc"></div>
-    <button class="copy-btn" id="cpBtn" hidden></button>
     <div class="tx" id="stx"></div>
     <button class="close" id="clsBtn" data-close>Жабу</button>
   </div>
@@ -309,20 +316,40 @@ nav button span img { width: 20px; height: 20px; object-fit: contain; }
 <script>
 const LOGO = "logo.png";
 
+const SENIOR_DOCTORS_HTML = `
+  <div class="doc-banner">Список дежурных старших врачей информационно-оперативного отдела ССМП г. Алматы</div>
+  <ol class="doc-list">
+    <li><span class="doc-num">1</span><span>Абдуллаева Динара Амангельдиевна</span></li>
+    <li><span class="doc-num">2</span><span>Асанова Акмарал Сайрамбековна</span></li>
+    <li><span class="doc-num">3</span><span>Бадуанова Алма Курманбековна</span></li>
+    <li><span class="doc-num">4</span><span>Бултрикова Гулнара Жубатхановна</span></li>
+    <li><span class="doc-num">5</span><span>Восканов Вадим Робертович</span></li>
+    <li><span class="doc-num">6</span><span>Елеусиз Манарбек Елеусизович</span></li>
+    <li><span class="doc-num">7</span><span>Ендевицкая Мария Анатольевна</span></li>
+    <li><span class="doc-num">8</span><span>Ерманова Айгул Мейрамовна</span></li>
+    <li><span class="doc-num">9</span><span>Есемуратова Гулбахор Дошмуратовна</span></li>
+    <li><span class="doc-num">10</span><span>Кайынбаева Шаригул Турсынгожаевна</span></li>
+    <li><span class="doc-num">11</span><span>Левцова Наталья Евгеньевна</span></li>
+    <li><span class="doc-num">12</span><span>Мамырханова Айгул Ауелжановна</span></li>
+    <li><span class="doc-num">13</span><span>Мухтарова Зухра Максимовна</span></li>
+    <li><span class="doc-num">14</span><span>Набидинова Саяра Амерденовна</span></li>
+    <li><span class="doc-num">15</span><span>Шакирова Алия Сырымовна</span></li>
+    <li><span class="doc-num">16</span><span>Нургожаева Ажар Муратовна</span></li>
+  </ol>
+`;
+
 const DB = {
   kk: {
     btn: "РУС",
     title: "Qolday 103",
     subtitle: "Фельдшер көмекшісі",
-    disclaimer: "Бұл құрал тек анықтамалық-ақпараттық сипатқа ие және ресми медициналық қосымша немесе ЖМЖҚ бағдарламалық қамтамасыз етуі болып табылмайды. Медицина қызметкері барлық клиникалық шешімдер мен дозалау есептеулерін ҚР ДСМ өзекті клиникалық хаттамаларымен және препарат нұсқаулықтарымен міндетті түрде салыстыруы тиіс.",
+    disclaimer: "Бұл құрал тек анықтамалық-ақпараттық сипатқа ие және ресми медициналық бұйым немесе ЖМЖС бағдарламалық қамтамасыз етуі болып табылмайды. Медицина қызметкері барлық клиникалық шешімдер мен дозалау есептеулерін ҚР ДСМ өзекті клиникалық хаттамаларымен және препарат нұсқаулықтарымен міндетті түрде салыстыруы тиіс.",
     homeNav: "Басты бет",
     homeTitle: "Сізге қандай көмек қажет?",
     searchTitle: "Іздеу нәтижелері",
     back: "← Басты бетке",
     count: "жазба",
     search: "Барлық бөлімдерден іздеу...",
-    copy: "📋 Мәтінді көшіру",
-    copied: "Көшірілді!",
     empty: "Ештеңе табылмады.",
     noText: "Сипаттама әлі қосылмаған.",
     close: "Жабу",
@@ -350,7 +377,7 @@ const DB = {
             title: "Морфин гидрохлориді 1% - 1,0 мл",
             sub: "Есірткілік анальгетик (10 мг/мл)",
             calc: {
-              rate: 0.1, // 0.1 мг/кг (1:9 сұйылтқанда 1 мл = 1 мг)
+              rate: 0.1,
               maxMg: 10,
               unit: "мг",
               mlPerMg: 1,
@@ -376,7 +403,7 @@ const DB = {
               </div>
 
               <h3>Есепке алу және сұлбасы</h3>
-              <p>Қолданылған ампула міндетті түрде аға фельдшерге тапсырылып, арнайы журналға тіркеді.</p>
+              <p>Қолданылған ампула міндетті түрде аға фельдшерге тапсырылып, арнайы журналға тіркеледі.</p>
               <img src="morphine_scheme.png" alt="Морфин сұлбасы" onerror="this.style.display='none'">
             `
           },
@@ -409,7 +436,7 @@ const DB = {
             title: "Адреналин (Эпинефрин) 0,1% - 1,0 мл",
             sub: "Адреномиметик (1 мг/мл)",
             calc: {
-              rate: 0.01, // 0.01 мг/кг анафилаксия / балалар ЖӨР
+              rate: 0.01,
               maxMg: 0.5,
               unit: "мг",
               mlPerMg: 1,
@@ -422,17 +449,13 @@ const DB = {
       },
       ref: {
         name: "Анықтамалық", short: "Анықтамалық", icon: "📖", color: "var(--ref)",
-        note: "Аға дәрігерлер байланысы, МКБ-10 кодтары және стационарлар.",
+        note: "Аға дәрігерлер тізімі, МКБ-10 кодтары және стационарлар.",
         items: [
           {
             icon: "👨‍⚕️",
             title: "Аға дәрігерлер байланысы",
-            sub: "Орталық және қосалқы станциялар",
-            text: `
-              <p>Кеңес алу және шұғыл байланыс нөмірлері:</p>
-              <p><a class="tel-link" href="tel:+77273380303">📞 Орталық аға дәрігер: +7 (727) 338-03-03</a></p>
-              <p><a class="tel-link" href="tel:+77272790011">📞 №10 қ/с диспетчерлік: +7 (727) 279-00-11</a></p>
-            `
+            sub: "Алматы қ. ЖМЖС ақпараттық-жедел бөлімі",
+            text: SENIOR_DOCTORS_HTML
           },
           { icon: "🏥", title: "Алматы стационарлары", sub: "Мекенжайлары мен бейіндері", text: "<p>Қалалық клиникалық ауруханалар тізімі.</p>" }
         ]
@@ -451,8 +474,6 @@ const DB = {
     back: "← На главную",
     count: "записей",
     search: "Поиск по всем разделам...",
-    copy: "📋 Скопировать текст",
-    copied: "Скопировано!",
     empty: "Ничего не найдено.",
     noText: "Описание пока не добавлено.",
     close: "Закрыть",
@@ -552,17 +573,13 @@ const DB = {
       },
       ref: {
         name: "Справочник", short: "Справочник", icon: "📖", color: "var(--ref)",
-        note: "Контакты старших врачей, коды МКБ-10 и адреса стационаров.",
+        note: "Список старших врачей, коды МКБ-10 и адреса стационаров.",
         items: [
           {
             icon: "👨‍⚕️",
             title: "Контакты старших врачей",
-            sub: "Центр и подстанции",
-            text: `
-              <p>Телефоны для консультаций и оперативной связи:</p>
-              <p><a class="tel-link" href="tel:+77273380303">📞 Старший врач центра: +7 (727) 338-03-03</a></p>
-              <p><a class="tel-link" href="tel:+77272790011">📞 Диспетчерская п/с №10: +7 (727) 279-00-11</a></p>
-            `
+            sub: "Информационно-оперативный отдел ССМП г. Алматы",
+            text: SENIOR_DOCTORS_HTML
           },
           { icon: "🏥", title: "Стационары г. Алматы", sub: "Адреса и профили", text: "<p>Список городских клинических больниц и приёмных покоев.</p>" }
         ]
@@ -590,7 +607,6 @@ const stripTags = s => String(s || "").replace(/<[^>]*>/g, " ");
 let lang = "kk", cur = "home", q = "", openRef = null;
 $("#logo").src = LOGO;
 
-// Нативная кнопка Telegram "Назад"
 if (tg && tg.BackButton) {
   tg.BackButton.onClick(() => {
     if (!$("#imgModal").hidden) {
@@ -653,9 +669,7 @@ function render() {
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.k === navActive));
   const v = $("#view");
 
-  // Главный экран
   if (cur === "home") {
-    // Глобальный поиск по всем 6 разделам прямо с главной
     if (t) {
       const allKeys = [...d.homeKeys, ...d.navKeys];
       const results = [];
@@ -696,7 +710,6 @@ function render() {
     return;
   }
 
-  // Внутренний раздел
   const s = d.sections[cur];
   const rows = s.items.map((it, i) => ({ it, i })).filter(({ it }) =>
     !t || [it.title, it.sub, stripTags(it.text)].join(" ").toLowerCase().includes(t));
@@ -718,7 +731,6 @@ function openItem(secKey, i) {
   const it = d.sections[secKey].items[i];
   $("#shd").innerHTML = `<span class="ic">${ico(it.icon)}</span><span><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span>`;
 
-  // Рендер встроенного калькулятора, если он задан для препарата
   const calcBox = $("#scalc");
   if (it.calc) {
     calcBox.innerHTML = `
@@ -748,21 +760,6 @@ function openItem(secKey, i) {
   }
 
   $("#stx").innerHTML = it.text || `<p>${esc(d.noText)}</p>`;
-
-  const cpBtn = $("#cpBtn");
-  cpBtn.hidden = !it.text;
-  cpBtn.textContent = d.copy;
-  cpBtn.onclick = () => {
-    haptic("medium");
-    const rawText = stripTags(it.text).replace(/\s+/g, ' ').trim();
-    navigator.clipboard.writeText(rawText);
-    if (tg && tg.showPopup) {
-      tg.showPopup({ message: d.copied });
-    } else {
-      cpBtn.textContent = "✓ " + d.copied;
-      setTimeout(() => { cpBtn.textContent = d.copy; }, 1500);
-    }
-  };
 
   $("#sheet").hidden = false;
   $("#sheet .pn").scrollTop = 0;
@@ -816,7 +813,6 @@ $("#closeImgBtn").addEventListener("click", () => { $("#imgModal").hidden = true
 $("#imgModal").addEventListener("click", e => { if (e.target.id === "imgModal") { $("#imgModal").hidden = true; toggleTelegramBackButton(); } });
 $("#search").addEventListener("input", e => { q = e.target.value; render(); });
 
-// Офлайн-кэш страницы для работы без интернета (в лифтах, подвалах, за городом)
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   const swCode = `
     const CACHE = "qolday-103-v1";
